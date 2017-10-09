@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "118579552559",
+    "firebase_url": "https://activity-app-bb5c7.firebaseio.com",
+    "project_id": "activity-app-bb5c7",
+    "storage_bucket": "activity-app-bb5c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118579552559:android:6894865876aebf41",
+        "android_client_info": {
+          "package_name": "edu.gvsu.cis.activityapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118579552559-gsgjfjiag9nt8cnpbisfpa5a8nfmf609.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvDRDrWx11zCUa6nNo-R5gdrqz61xfqj4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
