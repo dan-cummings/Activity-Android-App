@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Activity App</string>
+    <string name="title_activity_create_account">CreateAccountActivity</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawer</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main_tab_nav">MainTabNavActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_user_nav_drawer">UserNavDrawerActivity</string>
+    <string name="title_activity_user_navigation">UserNavigationActivity</string>
+    <string name="title_activity_user_account_nav">UserAccountNavActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
