@@ -17,6 +17,8 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
+            case 0:
+                return new MapFragment();
             default:
                 return new TestFragment();
         }
@@ -31,13 +33,13 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position){
             case 0:
-                return "Test";
+                return "Map";
             case 1:
-                return "Playlists";
+                return "Places";
             case 2:
-                return "Albums";
+                return "Messages";
             case 3:
-                return "Artists";
+                return "Favorites?";
         }
         return null;
     }
