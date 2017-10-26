@@ -25,10 +25,10 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
     private GoogleApiClient mGAC;
     private LocationRequest mLocRequest;
     private FusedLocationProviderClient mFusedLocationProvider;
-
     private Location mCurrentLocation;
-
     private Context mContext;
+
+    private boolean mLocationEnabled;
 
     public ActivityMapManager(Context context) {
         this.mContext = context;
@@ -44,6 +44,8 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
         mLocRequest.setFastestInterval(2000);
 
         mFusedLocationProvider = LocationServices.getFusedLocationProviderClient(context);
+
+        this.mLocationEnabled = false;
     }
 
     public void connect() {
@@ -70,8 +72,24 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
         this.mCurrentLocation = location;
     }
 
+    public void setLocationEnabled(boolean enabled) {
+        this.mLocationEnabled = enabled;
+    }
+
+    public boolean isLocationEnabled() {
+        return this.mLocationEnabled;
+    }
+
     public Location getLocation() {
         return mCurrentLocation;
+    }
+
+    public FusedLocationProviderClient getFusedLocationProvider() {
+        return mFusedLocationProvider;
+    }
+
+    public GoogleApiClient getAPIClient() {
+        return mGAC;
     }
 
 }

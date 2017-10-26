@@ -3,6 +3,7 @@ package edu.gvsu.cis.activityapp.fragments;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.widget.Toast;
 
 import edu.gvsu.cis.activityapp.util.ActivityMapManager;
 
@@ -18,9 +19,16 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        System.out.println("POSITION DUMBASS: " + position);
         switch (position) {
             case 0:
                 return new MapFragment();
+            case 1:
+                return new TestFragment();
+            case 2:
+                return new TestFragment();
+            case 3:
+                return new TestFragment();
             default:
                 return new TestFragment();
         }
@@ -42,8 +50,9 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
                 return "Messages";
             case 3:
                 return "Favorites?";
+            default:
+                return "";
         }
-        return null;
     }
 
 }

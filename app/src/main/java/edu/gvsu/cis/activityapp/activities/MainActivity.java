@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ViewPager vp_pages = (ViewPager) findViewById(R.id.vp_pages);
         PagerAdapter pagerAdapter = new CustomFragmentPageAdapter(getSupportFragmentManager());
         vp_pages.setAdapter(pagerAdapter);
+        vp_pages.setCurrentItem(0);
 
         TabLayout tbl_pages = (TabLayout) findViewById(R.id.tbl_pages);
         tbl_pages.setupWithViewPager(vp_pages);
@@ -69,6 +70,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMapManager.connect();
 
         // Check if the app has location permissions
+        getLocationPermission();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Check if the app has location permissions.
         getLocationPermission();
     }
 
@@ -111,12 +120,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
+        mMapManager.setLocationEnabled(false);
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Location Services Enabled", Toast.LENGTH_SHORT).show();
                     mLocationPermissionGranted = true;
+                    mMapManager.setLocationEnabled(true);
                 }
             }
         }
@@ -126,10 +137,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Handles location permissions. If a request is made, onRequestPermissionsResult is called.
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {mLocationPermissionGranted = true;
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+            mMapManager.setLocationEnabled(true);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
+    }
+
+    public ActivityMapManager getMapManager() {
+        return this.mMapManager;
     }
 
 }
