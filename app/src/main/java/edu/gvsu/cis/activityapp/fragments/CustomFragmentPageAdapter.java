@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import edu.gvsu.cis.activityapp.util.ActivityMapManager;
+
 /**
  * Created by Kyle Flynn on 10/17/2017.
  */
