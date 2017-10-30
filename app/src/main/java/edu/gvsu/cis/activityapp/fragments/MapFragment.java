@@ -2,6 +2,7 @@ package edu.gvsu.cis.activityapp.fragments;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.activities.MainActivity;
 
@@ -34,6 +38,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private View mView;
 
     private MainActivity mActivity;
+
+    private Timer mTimer;
 
     public MapFragment() {}
 
@@ -79,20 +85,33 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         try {
             mGoogleMap.setMyLocationEnabled(enabled);
             mGoogleMap.getUiSettings().setMyLocationButtonEnabled(enabled);
-            getDeviceLocation();
+            startUpdateThread();
         } catch (SecurityException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void getDeviceLocation() {
-        try {
-            if (mActivity.getMapManager().isLocationEnabled()) {
-                // TODO - Do Stuff.
+    private void startUpdateThread() {
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // We can't update the map UI in this thread...
+                // In order to do this, we have to communicate with the main UI thread.
+                // https://developer.android.com/training/multiple-threads/communicate-ui.html
+                updateMap();
             }
-        } catch(SecurityException e)  {
-            e.printStackTrace();
+        }, 0, 5000);
+    }
+
+    private void updateMap() {
+        mLastKnownLocation = mActivity.getMapManager().getLocation();
+        if (mLastKnownLocation != null) {
+            // doStuff()
+            System.out.println("Location updated!");
+        } else {
+            System.out.println("Location is null...");
         }
     }
 
