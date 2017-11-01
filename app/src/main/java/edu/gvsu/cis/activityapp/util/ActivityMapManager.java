@@ -123,6 +123,10 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
         return mGAC;
     }
 
+    public GoogleMap getMap() {
+        return mGoogleMap;
+    }
+
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(mContext,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -138,7 +142,9 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
     private void getPlaces(Location location) {
         PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi.getCurrentPlace(mGAC, null);
         result.setResultCallback((likelyPlaces) -> {
-            System.out.println("LIKELY PLACES: " + likelyPlaces.get(0).getPlace().getName());
+            if (likelyPlaces.getCount() > 0) {
+                System.out.println("LIKELY PLACES: " + likelyPlaces.get(0).getPlace().getName());
+            }
         });
     }
 

@@ -43,7 +43,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     * Google Places API Web Service Key: AIzaSyAvHvPQ4a4OtjyEC0IJnqavqWxfKoA2kpU
     */
 
-    private GoogleMap mGoogleMap;
     private Location mLastKnownLocation;
 
     private MapView mMapView;
@@ -77,6 +76,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         mMapView = (MapView) view.findViewById(R.id.map);
 
+        // This view CONTAINS the map, and is NOT the map.
         if (mMapView != null) {
             mMapView.onCreate(null);
             mMapView.onResume();
@@ -88,16 +88,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getContext());
 
-        mGoogleMap = googleMap;
+        mActivity.getMapManager().setGoogleMap(googleMap);
 
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        GoogleMap mMap = mActivity.getMapManager().getMap();
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         boolean enabled = mActivity.getMapManager().isLocationEnabled();
 
         try {
-            mGoogleMap.setMyLocationEnabled(enabled);
-            mGoogleMap.getUiSettings().setMyLocationButtonEnabled(enabled);
-            mActivity.getMapManager().setGoogleMap(mGoogleMap);
+            mMap.setMyLocationEnabled(enabled);
+            mMap.getUiSettings().setMyLocationButtonEnabled(enabled);
             startUpdateThread();
         } catch (SecurityException e) {
             e.printStackTrace();
