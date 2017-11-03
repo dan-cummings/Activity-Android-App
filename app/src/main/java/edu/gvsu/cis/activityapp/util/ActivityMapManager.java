@@ -68,8 +68,8 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
                 .build();
         mLocRequest = new LocationRequest();
         mLocRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        mLocRequest.setInterval(2 * 1000);
-        mLocRequest.setFastestInterval(2000);
+//        mLocRequest.setInterval(2 * 1000);
+//        mLocRequest.setFastestInterval(2000);
 
         mPlaceAPI = Places.PlaceDetectionApi;
 

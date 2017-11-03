@@ -21,6 +21,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -92,18 +93,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         GoogleMap mMap = mActivity.getMapManager().getMap();
 
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         boolean enabled = mActivity.getMapManager().isLocationEnabled();
 
         try {
             mMap.setMyLocationEnabled(enabled);
             mMap.getUiSettings().setMyLocationButtonEnabled(enabled);
+            mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+            mMap.getUiSettings().setAllGesturesEnabled(true);
+            mMap.getUiSettings().setMapToolbarEnabled(true);
+            mMap.setOnMapClickListener(this::handleTouch);
+            mMap.setOnMarkerClickListener(this::handleMarkerTouch);
             startUpdateThread();
         } catch (SecurityException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void handleTouch(LatLng touch) {
+        mActivity.getMapManager().getMap().addMarker(new MarkerOptions().position(touch).title("My Marker"));
+    }
+
+    private boolean handleMarkerTouch(Marker marker) {
+        /*
+         * true if the listener has consumed the event (i.e., the default behavior should not occur);
+         * false otherwise (i.e., the default behavior should occur).
+         * The default behavior is for the camera to move to the marker and an info window to appear.
+         */
+        return false;
     }
 
     private void startUpdateThread() {
@@ -114,7 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 // We can't update the map UI in this thread...
                 // In order to do this, we have to communicate with the main UI thread.
                 // https://developer.android.com/training/multiple-threads/communicate-ui.html
-                updateMap();
+//                updateMap();
             }
         }, 0, 5000);
     }
