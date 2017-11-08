@@ -21,6 +21,8 @@ public class GooglePlacesController implements Callback<List<Place>> {
 
     private final String BASE_URL = "https://ww.google.com/";
 
+    private List<Place> places;
+
     public void init() {
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -40,7 +42,7 @@ public class GooglePlacesController implements Callback<List<Place>> {
     @Override
     public void onResponse(Call<List<Place>> call, Response<List<Place>> response) {
         if (response.isSuccessful()) {
-            List<Place> places = response.body();
+            places = response.body();
             for (Place p : places) {
                 System.out.println(p.getName());
             }
