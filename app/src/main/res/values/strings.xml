@@ -1,4 +1,7 @@
 <resources>
+    <item name="visible" type="id"/>
+    <item name="masked" type="id"/>
+
     <string name="app_name">Activity App</string>
     <string name="title_activity_create_account">CreateAccountActivity</string>
     <string name="title_activity_navigation_drawer">NavigationDrawer</string>
@@ -16,4 +19,19 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_register">Create an Account</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_password_confirm">Confirm Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="action_create_acct">Create Account</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_password_no_match">Passwords do not match</string>
 </resources>

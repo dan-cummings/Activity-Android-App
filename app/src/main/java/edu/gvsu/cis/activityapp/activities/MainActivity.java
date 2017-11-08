@@ -1,5 +1,6 @@
 package edu.gvsu.cis.activityapp.activities;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageView user_profile = (ImageView) headerView.findViewById(R.id.user_profile);
 
         user_profile.setOnClickListener((click) -> {
-            Toast.makeText(this, "Touched user icon!", Toast.LENGTH_SHORT).show();
+            // inflate a menu
         });
 
         // These lines of code designate the tab layout
@@ -105,6 +106,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        if (id == R.id.nav_login) {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        } else if (id == R.id.nav_logout) {
+
+        } else if (id == R.id.nav_settings) {
+
+        } else if (id == R.id.nav_about) {
+
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
