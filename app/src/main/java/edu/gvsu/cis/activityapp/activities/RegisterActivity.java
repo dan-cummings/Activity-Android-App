@@ -10,10 +10,12 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -22,17 +24,24 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mConfirmPass;
     private TextView mErrorOutput;
     private Button mCreateAcct;
+    private ProgressBar mProgressBar;
+
+    private FirebaseManager mFirebase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        // Set up the login form.
+        // Set up the firebase singleton so we can register users.
+        mFirebase = FirebaseManager.getInstance();
+
+        // Set up the register form.
         mEmail = (AutoCompleteTextView) findViewById(R.id.text_register_email);
         mPassword = (EditText) findViewById(R.id.text_register_password);
         mConfirmPass = (EditText) findViewById(R.id.text_register_conf_pass);
         mCreateAcct = (Button) findViewById(R.id.btn_create_acct);
         mErrorOutput = (TextView) findViewById(R.id.text_register_error_output);
+        mProgressBar = (ProgressBar) findViewById(R.id.register_progressbar);
 
         // Setup our listeners
         mEmail.addTextChangedListener(getWatcher());
@@ -41,18 +50,21 @@ public class RegisterActivity extends AppCompatActivity {
         mCreateAcct.setOnClickListener((click) -> createAccount());
 
         mErrorOutput.setVisibility(View.GONE);
+        mCreateAcct.setEnabled(false);
     }
 
     private boolean updateErrorOutput() {
         if (!isValidEmail()) {
             mErrorOutput.setVisibility(View.VISIBLE);
             mErrorOutput.setText(R.string.error_invalid_email);
+            mCreateAcct.setEnabled(false);
             return true;
         } else {
             mErrorOutput.setVisibility(View.GONE);
         }
 
         if (!isValidPassword()) {
+            mCreateAcct.setEnabled(false);
             mErrorOutput.setVisibility(View.VISIBLE);
             mErrorOutput.setText(R.string.error_invalid_password);
             return true;
@@ -60,7 +72,8 @@ public class RegisterActivity extends AppCompatActivity {
             mErrorOutput.setVisibility(View.GONE);
         }
 
-        if (!isValidPassword()) {
+        if (!passwordsMatch()) {
+            mCreateAcct.setEnabled(false);
             mErrorOutput.setVisibility(View.VISIBLE);
             mErrorOutput.setText(R.string.error_password_no_match);
             return true;
@@ -68,6 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
             mErrorOutput.setVisibility(View.GONE);
         }
 
+        mCreateAcct.setEnabled(true);
         return true;
     }
 
@@ -75,6 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (isValidPassword() && isValidEmail() && passwordsMatch()) {
             // Login and return for 'User' result from Firebase
             Toast.makeText(this, "Validated!", Toast.LENGTH_SHORT).show();
+            mProgressBar.setVisibility(View.VISIBLE);
         } else {
             mErrorOutput.setVisibility(View.VISIBLE);
             mErrorOutput.setText(R.string.error_invalid_password);
@@ -114,4 +129,3 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 }
-

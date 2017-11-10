@@ -26,10 +26,12 @@ import android.widget.Toast;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.CustomFragmentPageAdapter;
 import edu.gvsu.cis.activityapp.util.ActivityMapManager;
+import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMapManager mMapManager;
+    private FirebaseManager mFirebase;
 
     private boolean mLocationPermissionGranted;
 
@@ -45,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initialize our GoogleAPIClient for map and location services.
         mMapManager = new ActivityMapManager(this);
+
+        // Initialize our firebase singleton.
+        mFirebase = FirebaseManager.getInstance();
+        mFirebase.init(this);
 
         // Handle when the drawer opens/closes
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

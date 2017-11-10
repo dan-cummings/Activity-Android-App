@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPassword;
     private Button mLogin;
     private Button mRegister;
+    private TextView mLoginMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,9 @@ public class LoginActivity extends AppCompatActivity {
         mPassword = (EditText) findViewById(R.id.text_login_password);
         mLogin = (Button) findViewById(R.id.btn_login);
         mRegister = (Button) findViewById(R.id.btn_register);
+        mLoginMessage = (TextView) findViewById(R.id.text_login_message);
+
+        mLoginMessage.setVisibility(View.GONE);
 
         mLogin.setOnClickListener((click) -> login());
         mRegister.setOnClickListener((click) -> {

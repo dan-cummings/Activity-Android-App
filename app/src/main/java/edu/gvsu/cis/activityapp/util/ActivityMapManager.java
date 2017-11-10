@@ -42,6 +42,8 @@ import edu.gvsu.cis.activityapp.fragments.MapFragment;
 
 public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    private static ActivityMapManager instance;
+
     private AppCompatActivity mActivity;
     private Context mContext;
 
@@ -67,13 +69,20 @@ public class ActivityMapManager implements GoogleApiClient.ConnectionCallbacks, 
                 .addOnConnectionFailedListener(this)
                 .build();
         mLocRequest = new LocationRequest();
-        mLocRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//        mLocRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 //        mLocRequest.setInterval(2 * 1000);
 //        mLocRequest.setFastestInterval(2000);
 
         mPlaceAPI = Places.PlaceDetectionApi;
 
         this.mLocationEnabled = false;
+    }
+
+    public static ActivityMapManager getInstance() {
+        if (instance == null) {
+//            instance = new ActivityMapManager();
+        }
+        return instance;
     }
 
     public void connect() {
