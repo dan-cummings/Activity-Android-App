@@ -1,5 +1,6 @@
 package edu.gvsu.cis.activityapp.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -14,12 +15,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
+import java.util.regex.Pattern;
+
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private AutoCompleteTextView mEmail;
+    private EditText mFullName;
     private EditText mPassword;
     private EditText mConfirmPass;
     private TextView mErrorOutput;
@@ -37,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Set up the register form.
         mEmail = (AutoCompleteTextView) findViewById(R.id.text_register_email);
+        mFullName = (EditText) findViewById(R.id.text_register_name);
         mPassword = (EditText) findViewById(R.id.text_register_password);
         mConfirmPass = (EditText) findViewById(R.id.text_register_conf_pass);
         mCreateAcct = (Button) findViewById(R.id.btn_create_acct);
@@ -45,6 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Setup our listeners
         mEmail.addTextChangedListener(getWatcher());
+        mFullName.addTextChangedListener(getWatcher());
         mPassword.addTextChangedListener(getWatcher());
         mConfirmPass.addTextChangedListener(getWatcher());
         mCreateAcct.setOnClickListener((click) -> createAccount());
@@ -58,6 +67,15 @@ public class RegisterActivity extends AppCompatActivity {
             mErrorOutput.setVisibility(View.VISIBLE);
             mErrorOutput.setText(R.string.error_invalid_email);
             mCreateAcct.setEnabled(false);
+            return true;
+        } else {
+            mErrorOutput.setVisibility(View.GONE);
+        }
+
+        if (!isValidName()) {
+            mCreateAcct.setEnabled(false);
+            mErrorOutput.setVisibility(View.VISIBLE);
+            mErrorOutput.setText(R.string.error_invalid_name);
             return true;
         } else {
             mErrorOutput.setVisibility(View.GONE);
@@ -85,15 +103,53 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    public void createAccount() {
-        if (isValidPassword() && isValidEmail() && passwordsMatch()) {
+    private void createAccount() {
+        if (isValidPassword() && isValidEmail() && passwordsMatch() && isValidName()) {
             // Login and return for 'User' result from Firebase
-            Toast.makeText(this, "Validated!", Toast.LENGTH_SHORT).show();
             mProgressBar.setVisibility(View.VISIBLE);
+
+            String email = mEmail.getText().toString();
+            String pass = mPassword.getText().toString();
+            Toast.makeText(this, "Creating account...", Toast.LENGTH_SHORT);
+            mFirebase.registerUser(email, pass).addOnCompleteListener(this, (result) -> {
+                Toast.makeText(this, "Finished " + result.isSuccessful(), Toast.LENGTH_SHORT);
+                if (result.isSuccessful()) {
+                    createUserProfile(result.getResult().getUser());
+                } else {
+                    mProgressBar.setVisibility(View.GONE);
+                    result.getException().printStackTrace();
+                    mErrorOutput.setVisibility(View.VISIBLE);
+                    mErrorOutput.setText(result.getException().getMessage());
+                }
+            });
+
         } else {
             mErrorOutput.setVisibility(View.VISIBLE);
             mErrorOutput.setText(R.string.error_invalid_password);
         }
+    }
+
+    private void createUserProfile(FirebaseUser newUser) {
+        UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder().setDisplayName("Jane Q. User").build();
+        newUser.updateProfile(newProfile).addOnCompleteListener(this, (result) -> {
+            mProgressBar.setVisibility(View.GONE);
+            if (result.isSuccessful()) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            } else {
+                result.getException().printStackTrace();
+                mErrorOutput.setVisibility(View.VISIBLE);
+                mErrorOutput.setText(result.getException().getMessage());
+            }
+        });
+    }
+
+    private boolean isValidName() {
+//        String name = mFullName.getText().toString();
+//        System.out.println("PATTERN: " + name + " | " + name.matches("/^[a-zA-Z\\s]*$/"));
+//        return name.matches("/^[a-zA-Z\\s]*$/");
+        return mFullName.getText().toString().matches("([A-Z])\\w+ \\w+");
     }
 
     private boolean isValidPassword() {

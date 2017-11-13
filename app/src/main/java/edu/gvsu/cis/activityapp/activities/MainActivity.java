@@ -21,7 +21,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
+import org.w3c.dom.Text;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.CustomFragmentPageAdapter;
@@ -32,6 +38,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ActivityMapManager mMapManager;
     private FirebaseManager mFirebase;
+    private FirebaseUser mUser;
+
+    private NavigationView drawerView;
+    private View headerView;
+    private TextView userName;
+    private TextView userEmail;
 
     private boolean mLocationPermissionGranted;
 
@@ -59,14 +71,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View headerView = navigationView.getHeaderView(0);
-        ImageView user_profile = (ImageView) headerView.findViewById(R.id.user_profile);
-
-        user_profile.setOnClickListener((click) -> {
-            // inflate a menu
-        });
+        drawerView = (NavigationView) findViewById(R.id.nav_view);
+        drawerView.setNavigationItemSelectedListener(this);
+        headerView = drawerView.getHeaderView(0);
+        userEmail = (TextView) headerView.findViewById(R.id.user_email);
+        userName = (TextView) headerView.findViewById(R.id.user_name);
 
         // These lines of code designate the tab layout
         ViewPager vp_pages = (ViewPager) findViewById(R.id.vp_pages);
@@ -95,6 +104,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Check if the app has location permissions.
         getLocationPermission();
+        mUser = mFirebase.getUser();
+
+        if (mUser != null) {
+            userName.setText(mUser.getDisplayName());
+            userEmail.setText(mUser.getEmail());
+
+            drawerView.getMenu().getItem(0).setVisible(false);
+            drawerView.getMenu().getItem(1).setVisible(true);
+        } else {
+//            drawerView.findViewById(R.id.nav_login).setVisibility(View.VISIBLE);
+//            drawerView.findViewById(R.id.nav_logout).setVisibility(View.GONE);
+            drawerView.getMenu().getItem(0).setVisible(true);
+            drawerView.getMenu().getItem(1).setVisible(false);
+        }
     }
 
     @Override
@@ -117,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_logout) {
-
+            mFirebase.signOut();
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_about) {
