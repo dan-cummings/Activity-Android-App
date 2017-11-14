@@ -25,9 +25,11 @@ import com.google.firebase.auth.FirebaseUser;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.CustomFragmentPageAdapter;
 import edu.gvsu.cis.activityapp.util.MapManager;
+import edu.gvsu.cis.activityapp.fragments.PlaceItemFragment;
+import edu.gvsu.cis.activityapp.fragments.dummy.DummyContent;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PlaceItemFragment.OnListFragmentInteractionListener {
 
     private MapManager mMapManager;
     private FirebaseManager mFirebase;
@@ -178,4 +180,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public MapManager getMapManager() {
+        return this.mMapManager;
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+    }
 }
