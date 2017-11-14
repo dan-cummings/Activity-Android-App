@@ -130,7 +130,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void createUserProfile(FirebaseUser newUser) {
-        UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder().setDisplayName("Jane Q. User").build();
+        String name = mFullName.getText().toString();
+        UserProfileChangeRequest newProfile = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
         newUser.updateProfile(newProfile).addOnCompleteListener(this, (result) -> {
             mProgressBar.setVisibility(View.GONE);
             if (result.isSuccessful()) {
@@ -146,9 +147,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isValidName() {
-//        String name = mFullName.getText().toString();
-//        System.out.println("PATTERN: " + name + " | " + name.matches("/^[a-zA-Z\\s]*$/"));
-//        return name.matches("/^[a-zA-Z\\s]*$/");
         return mFullName.getText().toString().matches("([A-Z])\\w+ \\w+");
     }
 

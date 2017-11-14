@@ -104,20 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Check if the app has location permissions.
         getLocationPermission();
-        mUser = mFirebase.getUser();
-
-        if (mUser != null) {
-            userName.setText(mUser.getDisplayName());
-            userEmail.setText(mUser.getEmail());
-
-            drawerView.getMenu().getItem(0).setVisible(false);
-            drawerView.getMenu().getItem(1).setVisible(true);
-        } else {
-//            drawerView.findViewById(R.id.nav_login).setVisibility(View.VISIBLE);
-//            drawerView.findViewById(R.id.nav_logout).setVisibility(View.GONE);
-            drawerView.getMenu().getItem(0).setVisible(true);
-            drawerView.getMenu().getItem(1).setVisible(false);
-        }
+        checkIfUserExists();
     }
 
     @Override
@@ -130,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -141,10 +127,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(i);
         } else if (id == R.id.nav_logout) {
             mFirebase.signOut();
+            checkIfUserExists();
         } else if (id == R.id.nav_settings) {
-
+            // Start settings activity
         } else if (id == R.id.nav_about) {
-
+            // Start about activity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -167,6 +154,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 //        updateLocationUI();
+    }
+
+    private void checkIfUserExists() {
+        mUser = mFirebase.getUser();
+
+        if (mUser != null) {
+            userName.setText(mUser.getDisplayName());
+            userEmail.setText(mUser.getEmail());
+
+            drawerView.getMenu().getItem(0).setVisible(false);
+            drawerView.getMenu().getItem(1).setVisible(true);
+        } else {
+            userName.setText("");
+            userEmail.setText("You are not logged in.");
+            drawerView.getMenu().getItem(0).setVisible(true);
+            drawerView.getMenu().getItem(1).setVisible(false);
+        }
     }
 
     // Handles location permissions. If a request is made, onRequestPermissionsResult is called.

@@ -37,6 +37,7 @@ public class FirebaseManager {
 
     public void signOut() {
         mAuth.signOut();
+//        mUser = null;
     }
 
     public Task<AuthResult> registerUser(String email, String password) {
