@@ -3,9 +3,6 @@ package edu.gvsu.cis.activityapp.fragments;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.widget.Toast;
-
-import edu.gvsu.cis.activityapp.util.ActivityMapManager;
 
 /**
  * Created by Kyle Flynn on 10/17/2017.

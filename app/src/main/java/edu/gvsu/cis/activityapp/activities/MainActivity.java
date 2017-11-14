@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,25 +16,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-
-import org.w3c.dom.Text;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.CustomFragmentPageAdapter;
-import edu.gvsu.cis.activityapp.util.ActivityMapManager;
+import edu.gvsu.cis.activityapp.util.MapManager;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private ActivityMapManager mMapManager;
+    private MapManager mMapManager;
     private FirebaseManager mFirebase;
     private FirebaseUser mUser;
 
@@ -58,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         // Initialize our GoogleAPIClient for map and location services.
-        mMapManager = new ActivityMapManager(this);
+        mMapManager = MapManager.getInstance();
+        mMapManager.init(this);
 
         // Initialize our firebase singleton.
         mFirebase = FirebaseManager.getInstance();
@@ -142,14 +136,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
-        mMapManager.setLocationEnabled(false);
+        mMapManager.setLocEnabled(false);
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Location Services Enabled", Toast.LENGTH_SHORT).show();
                     mLocationPermissionGranted = true;
-                    mMapManager.setLocationEnabled(true);
+                    mMapManager.setLocEnabled(true);
                 }
             }
         }
@@ -178,14 +172,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-            mMapManager.setLocationEnabled(true);
+            mMapManager.setLocEnabled(true);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-    }
-
-    public ActivityMapManager getMapManager() {
-        return this.mMapManager;
     }
 
 }
