@@ -36,4 +36,5 @@
     <string name="error_password_no_match">Passwords do not match</string>
     <string name="prompt_name">Full Name</string>
     <string name="error_invalid_name">Name can only contain letters and whitespaces</string>
+    <string name="btn_change_loc">Change Location</string>
 </resources>

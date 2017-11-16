@@ -86,10 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-
-        // Connect to Google APIs
-        mMapManager.connect();
-
         // Check if the app has location permissions
         getLocationPermission();
     }
