@@ -49,15 +49,14 @@ public class MapManager {
 
     @SuppressLint("MissingPermission")
     public GoogleMap initMap(GoogleMap map) {
-        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        map.setMyLocationEnabled(isLocEnabled());
-        map.getUiSettings().setMyLocationButtonEnabled(isLocEnabled());
-        map.getUiSettings().setIndoorLevelPickerEnabled(true);
-        map.getUiSettings().setAllGesturesEnabled(true);
-        map.getUiSettings().setMapToolbarEnabled(true);
-
         this.mGoogleMap = map;
-
+        this.mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        this.mGoogleMap.setMyLocationEnabled(isLocEnabled());
+        this.mGoogleMap.getUiSettings().setMyLocationButtonEnabled(isLocEnabled());
+        this.mGoogleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+        this.mGoogleMap.getUiSettings().setAllGesturesEnabled(true);
+        this.mGoogleMap.getUiSettings().setMapToolbarEnabled(true);
+        this.mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         return this.mGoogleMap;
     }
 
