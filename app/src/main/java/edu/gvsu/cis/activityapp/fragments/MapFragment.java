@@ -17,6 +17,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,11 +28,24 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Timer;
 
+import cz.msebera.android.httpclient.Header;
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.services.GooglePlacesProvider;
+import edu.gvsu.cis.activityapp.util.GoogleJSONResponse;
+import edu.gvsu.cis.activityapp.util.GooglePlacesResults;
+import edu.gvsu.cis.activityapp.util.HttpRequest;
 import edu.gvsu.cis.activityapp.util.MapManager;
+import edu.gvsu.cis.activityapp.util.RequestBuilder;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -95,6 +109,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         try {
             mMap.setOnMapClickListener(this::handleTouch);
             mMap.setOnMarkerClickListener(this::handleMarkerTouch);
+
 //            startUpdateThread();
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -125,7 +140,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void moveCamera(LatLng location) {
-        mMapManager.getMap().moveCamera(CameraUpdateFactory.newLatLng(location));
+        mMapManager.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14.0f));
     }
 
     public void openPlacePicker() {
@@ -147,6 +162,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Place place = PlacePicker.getPlace(getContext(), data);
                 placeMarker(place.getLatLng(), place.getName().toString(), BitmapDescriptorFactory.HUE_AZURE);
                 moveCamera(place.getLatLng());
+                HttpRequest nearbyPlaces = new HttpRequest(
+                        new RequestBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/")
+                                .setQuery("json")
+                                .addParam("location", place.getLatLng().latitude + "," + place.getLatLng().longitude)
+                                .addParam("radius", "1609")
+//                                .addParam("type", "point_of_interest")
+                                .addParam("key", "AIzaSyAvHvPQ4a4OtjyEC0IJnqavqWxfKoA2kpU"));
+                GooglePlacesProvider.get(nearbyPlaces.toString(), null, getNearbyPlaces());
             }
         }
     }
@@ -160,27 +183,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return false;
     }
 
-//    private void startUpdateThread() {
-//        mTimer = new Timer();
-//        mTimer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                // We can't update the map UI in this thread...
-//                // In order to do this, we have to communicate with the main UI thread.
-//                // https://developer.android.com/training/multiple-threads/communicate-ui.html
-////                updateMap();
-//            }
-//        }, 0, 5000);
-//    }
-//
-//    private void updateMap() {
-//        mLastKnownLocation = mMapManager.getLocation();
-//        if (mLastKnownLocation != null) {
-//            // doStuff()
-//            System.out.println("Location updated!");
-//        } else {
-//            System.out.println("Location is null...");
-//        }
-//    }
+    public JsonHttpResponseHandler getNearbyPlaces() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                GoogleJSONResponse mapper = gson.fromJson(response.toString(), GoogleJSONResponse.class);
+
+                List<GooglePlacesResults> results = mapper.getResults();
+                if(results != null){
+                    for(GooglePlacesResults r : results){
+                        double placeLat = r.getGeometry().getLocation().getLat();
+                        double placeLng = r.getGeometry().getLocation().getLng();
+                        LatLng placeLoc = new LatLng(placeLat, placeLng);
+
+                        placeMarker(placeLoc, r.getName(), BitmapDescriptorFactory.HUE_ORANGE);
+                    }
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray places) {
+                System.out.println("ARRAY OBJECT RESPONSE");
+                System.out.println(places.toString());
+            }
+        };
+    }
 
 }
