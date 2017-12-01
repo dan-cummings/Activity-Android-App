@@ -1,6 +1,6 @@
 <resources>
-    <item name="visible" type="id"/>
-    <item name="masked" type="id"/>
+    <item name="visible" type="id" />
+    <item name="masked" type="id" />
 
     <string name="app_name">Activity App</string>
     <string name="title_activity_create_account">CreateAccountActivity</string>

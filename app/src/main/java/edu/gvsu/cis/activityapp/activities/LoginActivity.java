@@ -37,6 +37,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
@@ -47,12 +50,12 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView mEmail;
-    private EditText mPassword;
-    private Button mLogin;
-    private Button mRegister;
-    private TextView mLoginMessage;
-    private ProgressBar mLoginProgress;
+    @BindView(R.id.text_login_email) AutoCompleteTextView mEmail;
+    @BindView(R.id.text_login_password) EditText mPassword;
+    @BindView(R.id.text_login_message) TextView mLoginMessage;
+    @BindView(R.id.btn_login) Button mLogin;
+    @BindView(R.id.login_progressbar) ProgressBar mLoginProgress;
+    @BindView(R.id.btn_register) Button mRegister;
 
     private FirebaseManager mFirebase;
 
@@ -61,20 +64,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmail = (AutoCompleteTextView) findViewById(R.id.text_login_email);
-        mPassword = (EditText) findViewById(R.id.text_login_password);
-        mLogin = (Button) findViewById(R.id.btn_login);
-        mRegister = (Button) findViewById(R.id.btn_register);
-        mLoginMessage = (TextView) findViewById(R.id.text_login_message);
-        mLoginProgress = (ProgressBar) findViewById(R.id.login_progressbar);
-
+        ButterKnife.bind(this);
         mLoginMessage.setVisibility(View.GONE);
         mLoginProgress.setVisibility(View.GONE);
 
         mEmail.addTextChangedListener(getWatcher());
         mPassword.addTextChangedListener(getWatcher());
 
-        mLogin.setOnClickListener((click) -> login());
         mRegister.setOnClickListener((click) -> {
             Intent i = new Intent(this, RegisterActivity.class);
             startActivity(i);
@@ -83,7 +79,8 @@ public class LoginActivity extends AppCompatActivity {
         mFirebase = FirebaseManager.getInstance();
     }
 
-    private void login() {
+    @OnClick(R.id.btn_login)
+    public void login() {
         mLoginProgress.setVisibility(View.VISIBLE);
 
         String email = mEmail.getText().toString();
@@ -95,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-
             } else {
                 result.getException().printStackTrace();
                 mLoginMessage.setVisibility(View.VISIBLE);

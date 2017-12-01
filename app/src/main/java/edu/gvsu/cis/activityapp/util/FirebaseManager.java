@@ -20,7 +20,7 @@ public class FirebaseManager {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
 
-    public FirebaseManager() {}
+    public FirebaseManager() { }
 
     public static FirebaseManager getInstance() {
         if (instance == null) {

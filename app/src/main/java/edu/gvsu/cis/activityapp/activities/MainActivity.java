@@ -22,21 +22,24 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.fragments.ChatFragment;
 import edu.gvsu.cis.activityapp.fragments.CustomFragmentPageAdapter;
+import edu.gvsu.cis.activityapp.util.ChatContent.Chat;
 import edu.gvsu.cis.activityapp.util.MapManager;
-import edu.gvsu.cis.activityapp.fragments.PlaceItemFragment;
-import edu.gvsu.cis.activityapp.fragments.dummy.DummyContent;
+import edu.gvsu.cis.activityapp.fragments.PlaceFragment;
+import edu.gvsu.cis.activityapp.util.Places.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PlaceItemFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PlaceFragment.OnListFragmentInteractionListener, ChatFragment.OnListFragmentInteractionListener {
 
     private MapManager mMapManager;
     private FirebaseManager mFirebase;
     private FirebaseUser mUser;
 
-    private NavigationView drawerView;
-    private View headerView;
+    @BindView(R.id.nav_view) NavigationView drawerView;
     private TextView userName;
     private TextView userEmail;
 
@@ -45,9 +48,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // All of these lines of code come default when creating a navigation drawer activity.
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
@@ -67,9 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        drawerView = (NavigationView) findViewById(R.id.nav_view);
         drawerView.setNavigationItemSelectedListener(this);
-        headerView = drawerView.getHeaderView(0);
+        View headerView = drawerView.getHeaderView(0);
         userEmail = (TextView) headerView.findViewById(R.id.user_email);
         userName = (TextView) headerView.findViewById(R.id.user_name);
 
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
-//        updateLocationUI();
+    //updateLocationUI();
     }
 
     private void checkIfUserExists() {
@@ -181,7 +183,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(PlaceEvent item) {
+
+    }
+
+    @Override
+    public void onListFragmentInteraction(Chat item) {
 
     }
 }

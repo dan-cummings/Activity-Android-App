@@ -7,22 +7,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.gvsu.cis.activityapp.R;
-import edu.gvsu.cis.activityapp.fragments.PlaceItemFragment.OnListFragmentInteractionListener;
-import edu.gvsu.cis.activityapp.fragments.dummy.DummyContent.DummyItem;
+import edu.gvsu.cis.activityapp.fragments.PlaceFragment.OnListFragmentInteractionListener;
+import edu.gvsu.cis.activityapp.util.Places.PlaceEvent;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link PlaceEvent} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyPlaceItemRecyclerViewAdapter extends RecyclerView.Adapter<MyPlaceItemRecyclerViewAdapter.ViewHolder> {
+public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<PlaceEvent> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyPlaceItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public PlaceAdapter(List<PlaceEvent> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -30,15 +30,17 @@ public class MyPlaceItemRecyclerViewAdapter extends RecyclerView.Adapter<MyPlace
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_placeitem, parent, false);
+                .inflate(R.layout.fragment_place, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        //holder.mItem = mValues.get(position);
+
+        //TODO add field fill.
+        //holder.mIdView.setText(mValues.get(position));
+        //holder.mContentView.setText(mValues.get(position));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,13 +63,13 @@ public class MyPlaceItemRecyclerViewAdapter extends RecyclerView.Adapter<MyPlace
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public PlaceEvent mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mIdView = (TextView) view.findViewById(R.id.textView);
+            mContentView = (TextView) view.findViewById(R.id.textView2);
         }
 
         @Override

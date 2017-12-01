@@ -11,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import edu.gvsu.cis.activityapp.R;
-import edu.gvsu.cis.activityapp.fragments.dummy.DummyContent;
-import edu.gvsu.cis.activityapp.fragments.dummy.DummyContent.DummyItem;
-
-import java.util.List;
+import edu.gvsu.cis.activityapp.util.ChatContent;
+import edu.gvsu.cis.activityapp.util.ChatContent.Chat;
 
 /**
  * A fragment representing a list of Items.
@@ -22,11 +20,9 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class PlaceItemFragment extends Fragment {
+public class ChatFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
@@ -34,11 +30,12 @@ public class PlaceItemFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public PlaceItemFragment() { }
+    public ChatFragment() {
+    }
 
     @SuppressWarnings("unused")
-    public static PlaceItemFragment newInstance(int columnCount) {
-        PlaceItemFragment fragment = new PlaceItemFragment();
+    public static ChatFragment newInstance(int columnCount) {
+        ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -57,7 +54,7 @@ public class PlaceItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_placeitem_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -68,7 +65,7 @@ public class PlaceItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyPlaceItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new GroupChatAdapter(ChatContent.GROUPS, mListener));
         }
         return view;
     }
@@ -102,7 +99,6 @@ public class PlaceItemFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Chat item);
     }
 }

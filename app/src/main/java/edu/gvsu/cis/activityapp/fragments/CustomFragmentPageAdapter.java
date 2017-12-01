@@ -21,9 +21,9 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
             case 0:
                 return new MapFragment();
             case 1:
-                return new PlaceItemFragment();
+                return new PlaceFragment();
             case 2:
-                return new TestFragment();
+                return new ChatFragment();
             case 3:
                 return new TestFragment();
             default:

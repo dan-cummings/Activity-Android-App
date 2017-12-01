@@ -20,18 +20,21 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.regex.Pattern;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView mEmail;
-    private EditText mFullName;
-    private EditText mPassword;
-    private EditText mConfirmPass;
-    private TextView mErrorOutput;
-    private Button mCreateAcct;
-    private ProgressBar mProgressBar;
+    @BindView(R.id.text_register_email) AutoCompleteTextView mEmail;
+    @BindView(R.id.text_register_name) EditText mFullName;
+    @BindView(R.id.text_register_password) EditText mPassword;
+    @BindView(R.id.text_register_conf_pass) EditText mConfirmPass;
+    @BindView(R.id.text_register_error_output) TextView mErrorOutput;
+    @BindView(R.id.btn_create_acct) Button mCreateAcct;
+    @BindView(R.id.register_progressbar) ProgressBar mProgressBar;
 
     private FirebaseManager mFirebase;
 
@@ -42,21 +45,14 @@ public class RegisterActivity extends AppCompatActivity {
         // Set up the firebase singleton so we can register users.
         mFirebase = FirebaseManager.getInstance();
 
-        // Set up the register form.
-        mEmail = (AutoCompleteTextView) findViewById(R.id.text_register_email);
-        mFullName = (EditText) findViewById(R.id.text_register_name);
-        mPassword = (EditText) findViewById(R.id.text_register_password);
-        mConfirmPass = (EditText) findViewById(R.id.text_register_conf_pass);
-        mCreateAcct = (Button) findViewById(R.id.btn_create_acct);
-        mErrorOutput = (TextView) findViewById(R.id.text_register_error_output);
-        mProgressBar = (ProgressBar) findViewById(R.id.register_progressbar);
+        //Sets up the register form
+        ButterKnife.bind(this);
 
         // Setup our listeners
         mEmail.addTextChangedListener(getWatcher());
         mFullName.addTextChangedListener(getWatcher());
         mPassword.addTextChangedListener(getWatcher());
         mConfirmPass.addTextChangedListener(getWatcher());
-        mCreateAcct.setOnClickListener((click) -> createAccount());
 
         mErrorOutput.setVisibility(View.GONE);
         mCreateAcct.setEnabled(false);
@@ -103,7 +99,8 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    private void createAccount() {
+    @OnClick(R.id.btn_create_acct)
+    public void createAccount() {
         if (isValidPassword() && isValidEmail() && passwordsMatch() && isValidName()) {
             // Login and return for 'User' result from Firebase
             mProgressBar.setVisibility(View.VISIBLE);
