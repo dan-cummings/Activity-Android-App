@@ -9,9 +9,23 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import edu.gvsu.cis.activityapp.R;
-import edu.gvsu.cis.activityapp.util.Places;
-import edu.gvsu.cis.activityapp.util.Places.PlaceEvent;
+import edu.gvsu.cis.activityapp.util.PlaceEvent;
+import edu.gvsu.cis.activityapp.util.User;
 
 /**
  * A fragment representing a list of Items.
@@ -24,6 +38,9 @@ public class PlaceFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private User user;
+    private List<PlaceEvent> events = new ArrayList<>();
+    private PlaceAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,6 +57,26 @@ public class PlaceFragment extends Fragment {
         return fragment;
     }
 
+    private void update() {
+        Map<String, Boolean> userEvent = user.getGroups();
+        Iterator iter = userEvent.keySet().iterator();
+        while (iter.hasNext()) {
+            String name = (String) iter.next();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Places").child(name);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    PlaceEvent temp = dataSnapshot.getValue(PlaceEvent.class);
+                    events.add(temp);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) { }
+            });
+
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +91,21 @@ public class PlaceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_place_list, container, false);
 
-        // Set the adapter
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser fbuser = auth.getCurrentUser();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(fbuser.getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                update();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -63,7 +114,8 @@ public class PlaceFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new PlaceAdapter(Places.EVENTS, mListener));
+            adapter = new PlaceAdapter(events, mListener);
+            recyclerView.setAdapter(adapter);
         }
         return view;
     }

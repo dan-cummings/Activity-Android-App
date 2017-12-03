@@ -3,7 +3,9 @@ package edu.gvsu.cis.activityapp.activities;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,15 +24,17 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import org.parceler.Parcels;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.ChatFragment;
 import edu.gvsu.cis.activityapp.fragments.CustomFragmentPageAdapter;
-import edu.gvsu.cis.activityapp.util.ChatContent.Chat;
+import edu.gvsu.cis.activityapp.util.Chat;
 import edu.gvsu.cis.activityapp.util.MapManager;
 import edu.gvsu.cis.activityapp.fragments.PlaceFragment;
-import edu.gvsu.cis.activityapp.util.Places.PlaceEvent;
+import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PlaceFragment.OnListFragmentInteractionListener, ChatFragment.OnListFragmentInteractionListener {
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MapManager mMapManager;
     private FirebaseManager mFirebase;
     private FirebaseUser mUser;
+
+    private static int NEW_EVENT_REQUEST = 0;
 
     @BindView(R.id.nav_view) NavigationView drawerView;
     private TextView userName;
@@ -80,6 +86,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PagerAdapter pagerAdapter = new CustomFragmentPageAdapter(getSupportFragmentManager());
         vp_pages.setAdapter(pagerAdapter);
         vp_pages.setCurrentItem(0);
+
+        //Added action button for adding an event.
+        FloatingActionButton addEvent = (FloatingActionButton) findViewById(R.id.addEventFab);
+        addEvent.setOnClickListener((click) -> {
+            Intent newEvent = new Intent(this, NewEventActivity.class);
+            startActivityForResult(newEvent, NEW_EVENT_REQUEST);
+        });
 
         TabLayout tbl_pages = (TabLayout) findViewById(R.id.tbl_pages);
         tbl_pages.setupWithViewPager(vp_pages);
@@ -148,6 +161,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     //updateLocationUI();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == NEW_EVENT_REQUEST) {
+                Parcelable parcel = data.getParcelableExtra("EVENT");
+                PlaceEvent event = Parcels.unwrap(parcel);
+                //TODO add the event to firebase.
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void checkIfUserExists() {

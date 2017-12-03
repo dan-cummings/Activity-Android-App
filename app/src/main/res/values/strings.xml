@@ -37,4 +37,5 @@
     <string name="prompt_name">Full Name</string>
     <string name="error_invalid_name">Name can only contain letters and whitespaces</string>
     <string name="btn_change_loc">Change Location</string>
+    <string name="title_activity_new_event">NewEventActivity</string>
 </resources>

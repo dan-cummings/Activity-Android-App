@@ -10,9 +10,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import edu.gvsu.cis.activityapp.R;
-import edu.gvsu.cis.activityapp.util.ChatContent;
-import edu.gvsu.cis.activityapp.util.ChatContent.Chat;
+import edu.gvsu.cis.activityapp.util.Chat;
+import edu.gvsu.cis.activityapp.util.User;
 
 /**
  * A fragment representing a list of Items.
@@ -25,12 +39,41 @@ public class ChatFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private List<Chat> chats;
+    private GroupChatAdapter adapter;
+
+    private User owner;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public ChatFragment() {
+        chats = new ArrayList<>();
+        owner = new User();
+    }
+
+    private void update() {
+        Map<String, Boolean> groups = owner.getChats();
+        Iterator iter = groups.keySet().iterator();
+        while (iter.hasNext()) {
+            String temp = (String) iter.next();
+            if (groups.get(temp)) {
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chats").child(temp);
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Chat group = (Chat) dataSnapshot.getValue(Chat.class);
+                        if (group != null) {
+                            chats.add(group);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) { }
+                });
+            }
+        }
     }
 
     @SuppressWarnings("unused")
@@ -58,6 +101,22 @@ public class ChatFragment extends Fragment {
 
         // Set the adapter
         if (view instanceof RecyclerView) {
+            FirebaseDatabase ref = FirebaseDatabase.getInstance();
+            FirebaseAuth authref = FirebaseAuth.getInstance();
+            FirebaseUser user = authref.getCurrentUser();
+
+            DatabaseReference userRef = ref.getReference("Users").child(user.getUid());
+            userRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    owner = dataSnapshot.getValue(User.class);
+                    update();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
@@ -65,7 +124,8 @@ public class ChatFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new GroupChatAdapter(ChatContent.GROUPS, mListener));
+            adapter = new GroupChatAdapter(chats, mListener);
+            recyclerView.setAdapter(adapter);
         }
         return view;
     }

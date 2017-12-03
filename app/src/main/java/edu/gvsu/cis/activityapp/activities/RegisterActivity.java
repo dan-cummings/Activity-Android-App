@@ -17,7 +17,10 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
@@ -25,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
+import edu.gvsu.cis.activityapp.util.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -132,6 +136,15 @@ public class RegisterActivity extends AppCompatActivity {
         newUser.updateProfile(newProfile).addOnCompleteListener(this, (result) -> {
             mProgressBar.setVisibility(View.GONE);
             if (result.isSuccessful()) {
+                User user = new User();
+                user.setName(mFullName.getText().toString());
+                user.setChats(new HashMap<>());
+                user.setGroups(new HashMap<>());
+                user.getGroups().put("hold", Boolean.TRUE);
+                user.getChats().put("hold", Boolean.TRUE);
+                FirebaseDatabase.getInstance().getReference("Users")
+                        .child(newUser.getUid())
+                        .setValue(user);
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

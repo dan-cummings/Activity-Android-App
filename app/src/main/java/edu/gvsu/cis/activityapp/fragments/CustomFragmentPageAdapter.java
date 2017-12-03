@@ -42,7 +42,7 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
             case 0:
                 return "Map";
             case 1:
-                return "Places";
+                return "Events";
             case 2:
                 return "Messages";
             case 3:

@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.PlaceFragment.OnListFragmentInteractionListener;
-import edu.gvsu.cis.activityapp.util.Places.PlaceEvent;
+import edu.gvsu.cis.activityapp.util.PlaceEvent;
 
 import java.util.List;
 

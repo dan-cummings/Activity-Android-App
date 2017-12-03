@@ -4,11 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.fragments.ChatFragment.OnListFragmentInteractionListener;
-import edu.gvsu.cis.activityapp.util.ChatContent.Chat;
+import edu.gvsu.cis.activityapp.util.Chat;
 
 import java.util.List;
 
@@ -27,6 +28,13 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
         mListener = listener;
     }
 
+
+    public void reloadFrom(final List<Chat> data) {
+        mValues.clear();
+        mValues.addAll(data);
+        notifyDataSetChanged();
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -37,9 +45,9 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mTitleView.setText(mValues.get(position).getmEventName());
-        holder.mMessageSentView.setText(mValues.get(position).getmLastMessage());
-        holder.mSenderName.setText(mValues.get(position).getmSender());
+        holder.mTitleView.setText(mValues.get(position).getEventName());
+        holder.mMessageSentView.setText(mValues.get(position).getLastMessage());
+        holder.mSenderName.setText(mValues.get(position).getSender());
 
         holder.mView.setOnClickListener((click) -> {
             if (null != mListener) {
@@ -64,6 +72,7 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
         public final TextView mTitleView;
         public final TextView mMessageSentView;
         public final TextView mSenderName;
+        public final ProgressBar progressBar;
         public Chat mItem;
 
         public ViewHolder(View view) {
@@ -72,6 +81,7 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
             mTitleView = (TextView) view.findViewById(R.id.title_view);
             mMessageSentView = (TextView) view.findViewById(R.id.last_message_view);
             mSenderName = (TextView) view.findViewById(R.id.sender_name);
+            progressBar = (ProgressBar) view.findViewById(R.id.progressBar3);
         }
 
         @Override
