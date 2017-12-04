@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <android.support.constraint.ConstraintLayout
@@ -27,8 +27,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="EVENT"
-            android:textColor="@android:color/white"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/event_image" />

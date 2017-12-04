@@ -9,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -17,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -39,35 +43,13 @@ public class PlaceFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private User user;
-    private List<PlaceEvent> events = new ArrayList<>();
-    private PlaceAdapter adapter;
-
-    private DatabaseReference userRef;
-
-    private ValueEventListener userListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            user = dataSnapshot.getValue(User.class);
-            update();
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
+    private FirebaseRecyclerAdapter<PlaceEvent, PlaceHolder> adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public PlaceFragment() {
-
-        events = new ArrayList<>();
-        userRef = FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-    }
+    public PlaceFragment() { }
 
     @SuppressWarnings("unused")
     public static PlaceFragment newInstance(int columnCount) {
@@ -78,43 +60,16 @@ public class PlaceFragment extends Fragment {
         return fragment;
     }
 
-    private void update() {
-        Map<String, Boolean> userEvent = user.getGroups();
-        Iterator iter = userEvent.keySet().iterator();
-        while (iter.hasNext()) {
-            String name = (String) iter.next();
-            DatabaseReference ref = FirebaseDatabase.getInstance()
-                    .getReference("Places")
-                    .child(name);
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    PlaceEvent temp = dataSnapshot.getValue(PlaceEvent.class);
-                    if (temp != null) {
-                        events.add(temp);
-                        adapter.updateFrom(events);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-        }
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        userRef.addValueEventListener(userListener);
+        adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        userRef.removeEventListener(userListener);
+        adapter.stopListening();
     }
 
     @Override
@@ -131,7 +86,16 @@ public class PlaceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_place_list, container, false);
 
-        userRef.addValueEventListener(userListener);
+        Query keyRef = FirebaseDatabase.getInstance().getReference("Users")
+                .child(FirebaseAuth.getInstance()
+                        .getCurrentUser()
+                        .getUid())
+                .child("groups");
+        DatabaseReference valRef = FirebaseDatabase.getInstance().getReference("Places");
+
+        FirebaseRecyclerOptions<PlaceEvent> options = new FirebaseRecyclerOptions.Builder<PlaceEvent>()
+                .setIndexedQuery(keyRef, valRef, PlaceEvent.class)
+                .build();
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
@@ -140,7 +104,31 @@ public class PlaceFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            adapter = new PlaceAdapter(events, mListener);
+            adapter = new FirebaseRecyclerAdapter<PlaceEvent, PlaceHolder>(options) {
+                @Override
+                protected void onBindViewHolder(PlaceHolder holder, int position, PlaceEvent model) {
+                    holder.mItem = model;
+                    holder.nameView.setText(model.getmName());
+                    holder.userView.setText(model.getmOwner());
+                    holder.mView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (null != mListener) {
+                                // Notify the active callbacks interface (the activity, if the
+                                // fragment is attached to one) that an item has been selected.
+                                mListener.onListFragmentInteraction(holder.mItem);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public PlaceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    View view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.fragment_place, parent, false);
+                    return new PlaceHolder(view);
+                }
+            };
             recyclerView.setAdapter(adapter);
         }
         return view;
@@ -164,17 +152,26 @@ public class PlaceFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(PlaceEvent item);
+    }
+
+    public class PlaceHolder extends RecyclerView.ViewHolder {
+        public final View mView;
+        public final TextView nameView;
+        public final TextView userView;
+        public PlaceEvent mItem;
+
+        public PlaceHolder(View view) {
+            super(view);
+            mView = view;
+            nameView = (TextView) view.findViewById(R.id.event_name);
+            userView = (TextView) view.findViewById(R.id.event_user_name);
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + " '" + userView.getText() + "'";
+        }
     }
 }
