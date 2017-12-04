@@ -140,8 +140,6 @@ public class RegisterActivity extends AppCompatActivity {
                 user.setName(mFullName.getText().toString());
                 user.setChats(new HashMap<>());
                 user.setGroups(new HashMap<>());
-                user.getGroups().put("hold", Boolean.TRUE);
-                user.getChats().put("hold", Boolean.TRUE);
                 FirebaseDatabase.getInstance().getReference("Users")
                         .child(newUser.getUid())
                         .setValue(user);

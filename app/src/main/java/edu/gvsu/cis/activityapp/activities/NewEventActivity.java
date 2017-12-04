@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
@@ -43,6 +44,8 @@ public class NewEventActivity extends AppCompatActivity implements TimePickerDia
 
     DateTime time;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +53,6 @@ public class NewEventActivity extends AppCompatActivity implements TimePickerDia
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +62,7 @@ public class NewEventActivity extends AppCompatActivity implements TimePickerDia
                 Intent eventIntent = new Intent();
                 PlaceEvent event = new PlaceEvent();
                 event.setmName(name.getText().toString());
+                event.setmOwner(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 event.setDate(fmt.print(date));
                 event.setTime(fmt.print(time));
                 //TODO add fields to event.

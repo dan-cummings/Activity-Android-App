@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -62,18 +63,20 @@ public class PlaceFragment extends Fragment {
         Iterator iter = userEvent.keySet().iterator();
         while (iter.hasNext()) {
             String name = (String) iter.next();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Places").child(name);
+            DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReference("Places")
+                    .child(name);
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     PlaceEvent temp = dataSnapshot.getValue(PlaceEvent.class);
                     events.add(temp);
+                    adapter.updateFrom(events);
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) { }
             });
-
         }
     }
 
@@ -91,9 +94,9 @@ public class PlaceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_place_list, container, false);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser fbuser = auth.getCurrentUser();
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(fbuser.getUid());
+        FirebaseUser fbuser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users")
+                .child(fbuser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

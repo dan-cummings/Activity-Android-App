@@ -22,9 +22,18 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.parceler.Parcels;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +45,8 @@ import edu.gvsu.cis.activityapp.util.MapManager;
 import edu.gvsu.cis.activityapp.fragments.PlaceFragment;
 import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
+import edu.gvsu.cis.activityapp.util.Message;
+import edu.gvsu.cis.activityapp.util.User;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PlaceFragment.OnListFragmentInteractionListener, ChatFragment.OnListFragmentInteractionListener {
 
@@ -48,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.nav_view) NavigationView drawerView;
     private TextView userName;
     private TextView userEmail;
+
+    User userData;
 
     private boolean mLocationPermissionGranted;
 
@@ -81,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userEmail = (TextView) headerView.findViewById(R.id.user_email);
         userName = (TextView) headerView.findViewById(R.id.user_name);
 
-        // These lines of code designate the tab layout
+        // These lines of code designate the tab message_layout
         ViewPager vp_pages = (ViewPager) findViewById(R.id.vp_pages);
         PagerAdapter pagerAdapter = new CustomFragmentPageAdapter(getSupportFragmentManager());
         vp_pages.setAdapter(pagerAdapter);
@@ -96,6 +109,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         TabLayout tbl_pages = (TabLayout) findViewById(R.id.tbl_pages);
         tbl_pages.setupWithViewPager(vp_pages);
+
+        FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(FirebaseAuth.getInstance().getUid())
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userData = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -136,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mFirebase.signOut();
             checkIfUserExists();
         } else if (id == R.id.nav_settings) {
-            // Start settings activity
+            // Settings activity
         } else if (id == R.id.nav_about) {
             // Start about activity
         }
@@ -169,7 +197,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (requestCode == NEW_EVENT_REQUEST) {
                 Parcelable parcel = data.getParcelableExtra("EVENT");
                 PlaceEvent event = Parcels.unwrap(parcel);
-                //TODO add the event to firebase.
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                event.getMembers().put(user.getDisplayName(), true);
+                event.setmOwner(user.getDisplayName());
+                String initMessage = "Welcome to my event.";
+                Chat newChat = new Chat(event.getmName(), initMessage, event.getmOwner());
+                newChat.getMembers().put(event.getmOwner(), Boolean.TRUE);
+                Message newMessage = new Message(initMessage, event.getmOwner());
+                //Makes these changes to the database.
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child("Messages")
+                        .child(event.getmName())
+                        .push()
+                        .setValue(newMessage);
+                rootRef.child("Chats")
+                        .child(event.getmName())
+                        .setValue(newChat);
+                rootRef.child("Places")
+                        .child(event.getmName())
+                        .setValue(event);
+                userData.getGroups().put(event.getmName(), Boolean.TRUE);
+                userData.getChats().put(event.getmName(), Boolean.TRUE);
+                rootRef.child("Users")
+                        .child(user.getUid())
+                        .setValue(userData);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -209,11 +260,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onListFragmentInteraction(PlaceEvent item) {
-
+        //TODO add details activity
     }
 
     @Override
     public void onListFragmentInteraction(Chat item) {
-
+        Intent chatIntent = new Intent(this, ChatActivity.class);
+        chatIntent.putExtra("GROUP", item.getEventName());
+        startActivity(chatIntent);
     }
 }

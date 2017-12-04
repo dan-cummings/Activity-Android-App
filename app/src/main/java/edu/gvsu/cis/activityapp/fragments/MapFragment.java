@@ -110,7 +110,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mMap.setOnMapClickListener(this::handleTouch);
             mMap.setOnMarkerClickListener(this::handleMarkerTouch);
 
-//            startUpdateThread();
+//          startUpdateThread();
 //          startUpdateThread();
         } catch (SecurityException e) {
             e.printStackTrace();

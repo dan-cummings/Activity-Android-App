@@ -5,6 +5,7 @@ import com.google.android.gms.location.places.Place;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class PlaceEvent {
     String mUid;
     String date;
     String time;
-    Map<String, Boolean> members;
+    Map<String, Boolean> members = new HashMap<>();
     String placeId;
 
     public PlaceEvent() { }

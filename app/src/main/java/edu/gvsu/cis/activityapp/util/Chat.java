@@ -8,6 +8,7 @@ import java.util.Map;
  * Created by daniel on 11/20/17.
 */
 public class Chat {
+
     String eventName;
     String lastMessage;
     String sender;

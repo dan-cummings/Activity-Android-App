@@ -33,7 +33,7 @@
             android:id="@+id/tbl_pages"/>
 
     </android.support.design.widget.AppBarLayout>
-    <!-- <include layout="@layout/content_main" />-->
+    <!-- <inclmessage_layoutyoumessage_layoutyout/content_main" />-->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

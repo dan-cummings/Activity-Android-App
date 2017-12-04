@@ -34,13 +34,17 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
+    public void updateFrom(List<PlaceEvent> events) {
+        mValues.clear();
+        mValues.addAll(events);
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        //holder.mItem = mValues.get(position);
+        holder.mItem = mValues.get(position);
 
-        //TODO add field fill.
-        //holder.mIdView.setText(mValues.get(position));
-        //holder.mContentView.setText(mValues.get(position));
+        holder.nameView.setText(mValues.get(position).getmName());
+        holder.userView.setText(mValues.get(position).getmOwner());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,20 +65,20 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView nameView;
+        public final TextView userView;
         public PlaceEvent mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.textView);
-            mContentView = (TextView) view.findViewById(R.id.textView2);
+            nameView = (TextView) view.findViewById(R.id.event_name);
+            userView = (TextView) view.findViewById(R.id.event_user_name);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + userView.getText() + "'";
         }
     }
 }
