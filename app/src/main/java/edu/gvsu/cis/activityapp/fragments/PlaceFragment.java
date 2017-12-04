@@ -43,11 +43,31 @@ public class PlaceFragment extends Fragment {
     private List<PlaceEvent> events = new ArrayList<>();
     private PlaceAdapter adapter;
 
+    private DatabaseReference userRef;
+
+    private ValueEventListener userListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            user = dataSnapshot.getValue(User.class);
+            update();
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public PlaceFragment() { }
+    public PlaceFragment() {
+
+        events = new ArrayList<>();
+        userRef = FirebaseDatabase.getInstance().getReference("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+    }
 
     @SuppressWarnings("unused")
     public static PlaceFragment newInstance(int columnCount) {
@@ -66,18 +86,35 @@ public class PlaceFragment extends Fragment {
             DatabaseReference ref = FirebaseDatabase.getInstance()
                     .getReference("Places")
                     .child(name);
-            ref.addValueEventListener(new ValueEventListener() {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     PlaceEvent temp = dataSnapshot.getValue(PlaceEvent.class);
-                    events.add(temp);
-                    adapter.updateFrom(events);
+                    if (temp != null) {
+                        events.add(temp);
+                        adapter.updateFrom(events);
+                    }
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) { }
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
             });
+
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        userRef.addValueEventListener(userListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        userRef.removeEventListener(userListener);
     }
 
     @Override
@@ -94,21 +131,7 @@ public class PlaceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_place_list, container, false);
 
-        FirebaseUser fbuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users")
-                .child(fbuser.getUid());
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
-                update();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        userRef.addValueEventListener(userListener);
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;

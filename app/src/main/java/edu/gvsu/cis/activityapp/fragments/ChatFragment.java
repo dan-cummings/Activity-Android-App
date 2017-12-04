@@ -2,6 +2,7 @@ package edu.gvsu.cis.activityapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,8 +42,21 @@ public class ChatFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private List<Chat> chats;
     private GroupChatAdapter adapter;
-
     private User owner;
+
+    private DatabaseReference userRef;
+    private ValueEventListener userListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            owner = dataSnapshot.getValue(User.class);
+            update();
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -58,21 +72,22 @@ public class ChatFragment extends Fragment {
         Iterator iter = groups.keySet().iterator();
         while (iter.hasNext()) {
             String temp = (String) iter.next();
-            if (groups.get(temp)) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chats").child(temp);
-                ref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Chat group = (Chat) dataSnapshot.getValue(Chat.class);
-                        if (group != null) {
-                            chats.add(group);
-                        }
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chats")
+                    .child(temp);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Chat group = dataSnapshot.getValue(Chat.class);
+                    if (group != null) {
+                        chats.add(group);
+                        adapter.reloadFrom(chats);
                     }
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) { }
-                });
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) { }
+            });
+
         }
     }
 
@@ -83,6 +98,18 @@ public class ChatFragment extends Fragment {
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        userRef.addValueEventListener(userListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        userRef.removeEventListener(userListener);
     }
 
     @Override
@@ -105,18 +132,8 @@ public class ChatFragment extends Fragment {
             FirebaseAuth authref = FirebaseAuth.getInstance();
             FirebaseUser user = authref.getCurrentUser();
 
-            DatabaseReference userRef = ref.getReference("Users").child(user.getUid());
-            userRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    owner = dataSnapshot.getValue(User.class);
-                    update();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            });
-
+            userRef = ref.getReference("Users").child(user.getUid());
+            userRef.addValueEventListener(userListener);
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {

@@ -98,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ViewPager vp_pages = (ViewPager) findViewById(R.id.vp_pages);
         PagerAdapter pagerAdapter = new CustomFragmentPageAdapter(getSupportFragmentManager());
         vp_pages.setAdapter(pagerAdapter);
-        vp_pages.setCurrentItem(0);
+        vp_pages.setOffscreenPageLimit(1);
+        vp_pages.setCurrentItem(0,true);
 
         //Added action button for adding an event.
         FloatingActionButton addEvent = (FloatingActionButton) findViewById(R.id.addEventFab);

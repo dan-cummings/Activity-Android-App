@@ -34,9 +34,10 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
-    public void updateFrom(List<PlaceEvent> events) {
+    public void updateFrom(final List<PlaceEvent> events) {
         mValues.clear();
         mValues.addAll(events);
+        notifyDataSetChanged();
     }
 
     @Override

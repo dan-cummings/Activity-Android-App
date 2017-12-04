@@ -3,12 +3,13 @@ package edu.gvsu.cis.activityapp.fragments;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by Kyle Flynn on 10/17/2017.
  */
 
-public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
+public class CustomFragmentPageAdapter extends FragmentStatePagerAdapter {
 
     public CustomFragmentPageAdapter(FragmentManager fm) {
         super(fm);
@@ -21,9 +22,9 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
             case 0:
                 return new MapFragment();
             case 1:
-                return new PlaceFragment();
+                return PlaceFragment.newInstance(1);
             case 2:
-                return new ChatFragment();
+                return ChatFragment.newInstance(1);
             case 3:
                 return new TestFragment();
             default:
