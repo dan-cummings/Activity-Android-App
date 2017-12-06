@@ -55,8 +55,6 @@ public class PlaceEvent {
         this.time = time;
     }
 
-
-
     public Map<String, Boolean> getMembers() {
         return this.members;
     }

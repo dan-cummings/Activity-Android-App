@@ -16,6 +16,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+
 import java.util.Map;
 
 import butterknife.BindView;
@@ -70,7 +73,24 @@ public class ChatActivity extends AppCompatActivity {
 
                 message.setText(model.getMessage());
                 sender.setText(model.getUser());
-                time.setText(model.getTime());
+                DateTime dt = DateTime.parse(model.getTime());
+                DateTime now = DateTime.now();
+                Period timePeriod = new Period(dt, now);
+
+                //(Only updates on bind of data.)
+                if (timePeriod.getDays() == 0) {
+                    if (timePeriod.getHours() == 0) {
+                        if (timePeriod.getMinutes() == 0) {
+                            time.setText("Moments ago");
+                        } else {
+                            time.setText(timePeriod.getMinutes() + " Minutes ago");
+                        }
+                    } else {
+                        time.setText(timePeriod.getHours() + " Hours ago");
+                    }
+                } else {
+                    time.setText(dt.getDayOfMonth() + "/" + dt.getMonthOfYear() + "/" + dt.getYear());
+                }
             }
         };
 
@@ -90,7 +110,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        //TODO place message in event list.
         if (!this.messageText.getText().toString().isEmpty()) {
             String user = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             FirebaseDatabase.getInstance()
@@ -98,8 +117,17 @@ public class ChatActivity extends AppCompatActivity {
                     .child(groupname)
                     .push()
                     .setValue(new Message(this.messageText.getText().toString(), user));
-            Map<String, Object> values;
-
+            FirebaseDatabase.getInstance()
+                    .getReference("Chats")
+                    .child(groupname)
+                    .child("lastMessage")
+                    .setValue(this.messageText.getText().toString());
+            FirebaseDatabase.getInstance()
+                    .getReference("Chats")
+                    .child(groupname)
+                    .child("sender")
+                    .setValue(user);
+            this.messageText.setText("");
         }
     }
 }
