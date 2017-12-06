@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.util.FirebaseManager;
 import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.User;
 
@@ -44,6 +45,7 @@ public class PlaceFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private FirebaseRecyclerAdapter<PlaceEvent, PlaceHolder> adapter;
+    private FirebaseManager mFirebase;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -63,18 +65,24 @@ public class PlaceFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if (this.mFirebase.getUser() != null) {
+            adapter.startListening();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if (this.mFirebase.getUser() != null ){
+            adapter.stopListening();
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.mFirebase = FirebaseManager.getInstance();
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -86,53 +94,57 @@ public class PlaceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_place_list, container, false);
 
-        Query keyRef = FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance()
-                        .getCurrentUser()
-                        .getUid())
-                .child("groups");
-        DatabaseReference valRef = FirebaseDatabase.getInstance().getReference("Places");
+        if (this.mFirebase.getUser() != null) {
+            Query keyRef = FirebaseDatabase.getInstance().getReference("Users")
+                    .child(FirebaseAuth.getInstance()
+                            .getCurrentUser()
+                            .getUid())
+                    .child("groups");
+            DatabaseReference valRef = FirebaseDatabase.getInstance().getReference("Places");
 
-        FirebaseRecyclerOptions<PlaceEvent> options = new FirebaseRecyclerOptions.Builder<PlaceEvent>()
-                .setIndexedQuery(keyRef, valRef, PlaceEvent.class)
-                .build();
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            adapter = new FirebaseRecyclerAdapter<PlaceEvent, PlaceHolder>(options) {
-                @Override
-                protected void onBindViewHolder(PlaceHolder holder, int position, PlaceEvent model) {
-                    holder.mItem = model;
-                    holder.nameView.setText(model.getmName());
-                    holder.userView.setText(model.getmOwner());
-                    holder.mView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (null != mListener) {
-                                // Notify the active callbacks interface (the activity, if the
-                                // fragment is attached to one) that an item has been selected.
-                                mListener.onListFragmentInteraction(holder.mItem);
+            FirebaseRecyclerOptions<PlaceEvent> options = new FirebaseRecyclerOptions.Builder<PlaceEvent>()
+                    .setIndexedQuery(keyRef, valRef, PlaceEvent.class)
+                    .build();
+            if (view instanceof RecyclerView) {
+                Context context = view.getContext();
+                RecyclerView recyclerView = (RecyclerView) view;
+                if (mColumnCount <= 1) {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                } else {
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                }
+                adapter = new FirebaseRecyclerAdapter<PlaceEvent, PlaceHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(PlaceHolder holder, int position, PlaceEvent model) {
+                        holder.mItem = model;
+                        holder.nameView.setText(model.getmName());
+                        holder.userView.setText(model.getmOwner());
+                        holder.mView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (null != mListener) {
+                                    // Notify the active callbacks interface (the activity, if the
+                                    // fragment is attached to one) that an item has been selected.
+                                    mListener.onListFragmentInteraction(holder.mItem);
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
 
-                @Override
-                public PlaceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                    View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.fragment_place, parent, false);
-                    return new PlaceHolder(view);
-                }
-            };
-            recyclerView.setAdapter(adapter);
+                    @Override
+                    public PlaceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.fragment_place, parent, false);
+                        return new PlaceHolder(view);
+                    }
+                };
+                recyclerView.setAdapter(adapter);
+            }
         }
+
         return view;
     }
+
 
 
     @Override

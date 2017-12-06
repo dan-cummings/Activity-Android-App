@@ -32,6 +32,7 @@ import java.util.Map;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.Chat;
+import edu.gvsu.cis.activityapp.util.FirebaseManager;
 import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.User;
 
@@ -47,6 +48,7 @@ public class ChatFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private FirebaseRecyclerAdapter<Chat, ChatHolder> adapter;
+    private FirebaseManager mFirebase;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,18 +70,25 @@ public class ChatFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if (this.mFirebase.getUser() != null) {
+            adapter.startListening();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if (this.mFirebase.getUser() != null){
+            adapter.stopListening();
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        this.mFirebase = FirebaseManager.getInstance();
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -91,52 +100,55 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
+        if (this.mFirebase.getUser() != null) {
+            // Set the adapter
+            if (view instanceof RecyclerView) {
 
-            Query keyRef = FirebaseDatabase.getInstance()
-                    .getReference("Users")
-                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .child("chats");
-            DatabaseReference valRef = FirebaseDatabase.getInstance()
-                    .getReference("Chats");
-            FirebaseRecyclerOptions<Chat> options = new FirebaseRecyclerOptions.Builder<Chat>()
-                    .setIndexedQuery(keyRef, valRef, Chat.class)
-                    .build();
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                Query keyRef = FirebaseDatabase.getInstance()
+                        .getReference("Users")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child("chats");
+                DatabaseReference valRef = FirebaseDatabase.getInstance()
+                        .getReference("Chats");
+                FirebaseRecyclerOptions<Chat> options = new FirebaseRecyclerOptions.Builder<Chat>()
+                        .setIndexedQuery(keyRef, valRef, Chat.class)
+                        .build();
+                Context context = view.getContext();
+                RecyclerView recyclerView = (RecyclerView) view;
+                if (mColumnCount <= 1) {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                } else {
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                }
+                adapter = new FirebaseRecyclerAdapter<Chat, ChatHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(ChatHolder holder, int position, Chat model) {
+                        holder.mItem = model;
+                        holder.mTitleView.setText(model.getEventName());
+                        holder.mMessageSentView.setText(model.getLastMessage());
+                        holder.mSenderName.setText(model.getSender());
+
+                        holder.mView.setOnClickListener((click) -> {
+                            if (null != mListener) {
+                                // Notify the active callbacks interface (the activity, if the
+                                // fragment is attached to one) that an item has been selected.
+                                mListener.onListFragmentInteraction(holder.mItem);
+                            }
+
+                        });
+                    }
+
+                    @Override
+                    public ChatHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.fragment_chat, parent, false);
+                        return new ChatHolder(view);
+                    }
+                };
+                recyclerView.setAdapter(adapter);
             }
-            adapter = new FirebaseRecyclerAdapter<Chat, ChatHolder>(options) {
-                @Override
-                protected void onBindViewHolder(ChatHolder holder, int position, Chat model) {
-                    holder.mItem = model;
-                    holder.mTitleView.setText(model.getEventName());
-                    holder.mMessageSentView.setText(model.getLastMessage());
-                    holder.mSenderName.setText(model.getSender());
-
-                    holder.mView.setOnClickListener((click) -> {
-                        if (null != mListener) {
-                            // Notify the active callbacks interface (the activity, if the
-                            // fragment is attached to one) that an item has been selected.
-                            mListener.onListFragmentInteraction(holder.mItem);
-                        }
-
-                    });
-                }
-
-                @Override
-                public ChatHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                    View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.fragment_chat, parent, false);
-                    return new ChatHolder(view);
-                }
-            };
-            recyclerView.setAdapter(adapter);
         }
+
         return view;
     }
 

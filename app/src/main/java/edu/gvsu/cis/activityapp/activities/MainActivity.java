@@ -111,20 +111,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TabLayout tbl_pages = (TabLayout) findViewById(R.id.tbl_pages);
         tbl_pages.setupWithViewPager(vp_pages);
 
-        FirebaseDatabase.getInstance()
-                .getReference("Users")
-                .child(FirebaseAuth.getInstance().getUid())
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userData = dataSnapshot.getValue(User.class);
-            }
+        if (mFirebase.getUser() != null) {
+            FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(FirebaseAuth.getInstance().getUid())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            userData = dataSnapshot.getValue(User.class);
+                        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                        }
+                    });
+        }
     }
 
     @Override
