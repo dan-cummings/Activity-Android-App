@@ -38,4 +38,8 @@
     <string name="error_invalid_name">Name can only contain letters and whitespaces</string>
     <string name="btn_change_loc">Change Location</string>
     <string name="title_activity_new_event">NewEventActivity</string>
+    <string name="btn_use_my_loc">Use My Location</string>
+    <string name="btn_select_loc">Select A Location</string>
+    <string name="txt_current_loc">Current Location: %1$s</string>
+    <string name="txt_current_loc_err">Current Location: Error Getting User Location</string>
 </resources>
