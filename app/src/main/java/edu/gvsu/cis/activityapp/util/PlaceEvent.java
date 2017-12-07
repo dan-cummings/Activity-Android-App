@@ -1,6 +1,7 @@
 package edu.gvsu.cis.activityapp.util;
 
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.parceler.Parcel;
 
@@ -24,6 +25,7 @@ public class PlaceEvent {
     String time;
     Map<String, Boolean> members = new HashMap<>();
     String placeId;
+    Place place;
 
     public PlaceEvent() { }
 
@@ -98,4 +100,12 @@ public class PlaceEvent {
     public void setKey(String k) { this._key = k;}
 
     public String getKey() { return this._key;}
+
+    public Place getPlace() {
+        return place;
+    }
+
+    public void setPlace(Place place) {
+        this.place = place;
+    }
 }
