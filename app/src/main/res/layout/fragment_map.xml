@@ -20,4 +20,16 @@
         android:layout_marginRight="80dp"
         android:text="@string/btn_change_loc" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addEventFab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="72dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
 </FrameLayout>

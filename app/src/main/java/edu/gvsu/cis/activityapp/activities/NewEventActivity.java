@@ -83,7 +83,7 @@ public class NewEventActivity extends AppCompatActivity implements TimePickerDia
             event.setmOwner(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
             event.setDate(fmt.print(date));
             event.setTime(fmt.print(time));
-            event.setPlace(currentPlace);
+//            event.setPlace(currentPlace);
             //TODO add fields to event.
             Parcelable parcel = Parcels.wrap(event);
             eventIntent.putExtra("EVENT", parcel);

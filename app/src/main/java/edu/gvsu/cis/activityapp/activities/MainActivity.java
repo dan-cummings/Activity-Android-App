@@ -101,13 +101,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         vp_pages.setOffscreenPageLimit(1);
         vp_pages.setCurrentItem(0,true);
 
-        //Added action button for adding an event.
-        FloatingActionButton addEvent = (FloatingActionButton) findViewById(R.id.addEventFab);
-        addEvent.setOnClickListener((click) -> {
-            Intent newEvent = new Intent(this, NewEventActivity.class);
-            startActivityForResult(newEvent, NEW_EVENT_REQUEST);
-        });
-
         TabLayout tbl_pages = (TabLayout) findViewById(R.id.tbl_pages);
         tbl_pages.setupWithViewPager(vp_pages);
 
@@ -192,41 +185,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     //updateLocationUI();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == NEW_EVENT_REQUEST) {
-                Parcelable parcel = data.getParcelableExtra("EVENT");
-                PlaceEvent event = Parcels.unwrap(parcel);
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                event.getMembers().put(user.getDisplayName(), true);
-                event.setmOwner(user.getDisplayName());
-                String initMessage = "Welcome to my event.";
-                Chat newChat = new Chat(event.getmName(), initMessage, event.getmOwner());
-                newChat.getMembers().put(event.getmOwner(), Boolean.TRUE);
-                Message newMessage = new Message(initMessage, event.getmOwner());
-                //Makes these changes to the database.
-                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                rootRef.child("Messages")
-                        .child(event.getmName())
-                        .push()
-                        .setValue(newMessage);
-                rootRef.child("Chats")
-                        .child(event.getmName())
-                        .setValue(newChat);
-                rootRef.child("Places")
-                        .child(event.getmName())
-                        .setValue(event);
-                userData.getGroups().put(event.getmName(), Boolean.TRUE);
-                userData.getChats().put(event.getmName(), Boolean.TRUE);
-                rootRef.child("Users")
-                        .child(user.getUid())
-                        .setValue(userData);
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void checkIfUserExists() {

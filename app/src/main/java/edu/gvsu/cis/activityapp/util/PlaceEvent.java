@@ -5,9 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.parceler.Parcel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +23,6 @@ public class PlaceEvent {
     String time;
     Map<String, Boolean> members = new HashMap<>();
     String placeId;
-    Place place;
 
     public PlaceEvent() { }
 
@@ -101,11 +98,4 @@ public class PlaceEvent {
 
     public String getKey() { return this._key;}
 
-    public Place getPlace() {
-        return place;
-    }
-
-    public void setPlace(Place place) {
-        this.place = place;
-    }
 }

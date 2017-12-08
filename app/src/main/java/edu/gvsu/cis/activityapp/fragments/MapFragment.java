@@ -3,7 +3,9 @@ package edu.gvsu.cis.activityapp.fragments;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,24 +30,38 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.List;
 import java.util.Timer;
 
 import cz.msebera.android.httpclient.Header;
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.activities.NewEventActivity;
 import edu.gvsu.cis.activityapp.services.GooglePlacesProvider;
+import edu.gvsu.cis.activityapp.util.Chat;
+import edu.gvsu.cis.activityapp.util.FirebaseManager;
 import edu.gvsu.cis.activityapp.util.GoogleJSONResponse;
 import edu.gvsu.cis.activityapp.util.GooglePlacesResults;
 import edu.gvsu.cis.activityapp.util.HttpRequest;
 import edu.gvsu.cis.activityapp.util.MapManager;
+import edu.gvsu.cis.activityapp.util.Message;
+import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.RequestBuilder;
+import edu.gvsu.cis.activityapp.util.User;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -68,6 +84,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Button mBtnChange;
 
     private Timer mTimer;
+    private FirebaseManager mFirebase;
+    private User userData;
 
     public MapFragment() {}
 
@@ -89,7 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         mMapView = (MapView) view.findViewById(R.id.map);
         mBtnChange = (Button) view.findViewById(R.id.btn_change_loc);
-
+        mFirebase = FirebaseManager.getInstance();
         mBtnChange.setOnClickListener((touch) -> openPlacePicker());
 
         // This view CONTAINS the map, and is NOT the map.
@@ -98,6 +116,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+
+        //Added action button for adding an event.
+        FloatingActionButton addEvent = (FloatingActionButton) view.findViewById(R.id.addEventFab);
+        addEvent.setOnClickListener((click) -> {
+            Intent newEvent = new Intent(view.getContext(), NewEventActivity.class);
+            startActivityForResult(newEvent, 3);
+        });
+
+        if (mFirebase.getUser() != null) {
+            addEvent.setVisibility(View.VISIBLE);
+            FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(FirebaseAuth.getInstance().getUid())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            userData = dataSnapshot.getValue(User.class);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        } else {
+            addEvent.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -154,8 +200,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
                 mMapManager.getMap().clear();
                 Place place = PlacePicker.getPlace(getContext(), data);
                 placeMarker(place.getLatLng(), place.getName().toString(), BitmapDescriptorFactory.HUE_AZURE);
@@ -168,8 +214,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 //                                .addParam("type", "point_of_interest")
                                 .addParam("key", "AIzaSyAvHvPQ4a4OtjyEC0IJnqavqWxfKoA2kpU"));
                 GooglePlacesProvider.get(nearbyPlaces.toString(), null, getNearbyPlaces());
+            } else if (requestCode == 3) {
+                Parcelable parcel = data.getParcelableExtra("EVENT");
+                PlaceEvent event = Parcels.unwrap(parcel);
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                event.getMembers().put(user.getDisplayName(), true);
+                event.setmOwner(user.getDisplayName());
+                String initMessage = "Welcome to my event.";
+                Chat newChat = new Chat(event.getmName(), initMessage, event.getmOwner());
+                newChat.getMembers().put(event.getmOwner(), Boolean.TRUE);
+                Message newMessage = new Message(initMessage, event.getmOwner());
+                //Makes these changes to the database.
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child("Messages")
+                        .child(event.getmName())
+                        .push()
+                        .setValue(newMessage);
+                rootRef.child("Chats")
+                        .child(event.getmName())
+                        .setValue(newChat);
+                rootRef.child("Places")
+                        .child(event.getmName())
+                        .setValue(event);
+                userData.getGroups().put(event.getmName(), Boolean.TRUE);
+                userData.getChats().put(event.getmName(), Boolean.TRUE);
+                rootRef.child("Users")
+                        .child(user.getUid())
+                        .setValue(userData);
             }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean handleMarkerTouch(Marker marker) {
