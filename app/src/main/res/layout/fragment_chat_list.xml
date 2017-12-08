@@ -6,6 +6,7 @@
     android:name="edu.gvsu.cis.activityapp.chatFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/cast_expanded_controller_actionbar_bg_gradient_light"
     app:layoutManager="LinearLayoutManager"
     tools:context="edu.gvsu.cis.activityapp.fragments.ChatFragment"
     tools:listitem="@layout/fragment_chat" />

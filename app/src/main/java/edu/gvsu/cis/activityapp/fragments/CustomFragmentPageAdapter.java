@@ -3,7 +3,6 @@ package edu.gvsu.cis.activityapp.fragments;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by Kyle Flynn on 10/17/2017.
@@ -26,7 +25,7 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
             case 2:
                 return ChatFragment.newInstance(1);
             case 3:
-                return new TestFragment();
+                return RequestFragment.newInstance(1);
             default:
                 return new TestFragment();
         }
@@ -47,7 +46,7 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
             case 2:
                 return "Messages";
             case 3:
-                return "Favorites?";
+                return "Invites";
             default:
                 return "";
         }

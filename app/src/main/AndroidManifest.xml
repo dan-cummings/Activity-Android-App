@@ -53,8 +53,9 @@
             android:name=".activities.NewEventActivity"
             android:label="@string/title_activity_new_event"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.EventDetailActivity" />
         <activity android:name=".activities.WebViewActivity"></activity>
+        <activity android:name=".activities.NewRequestActivity"></activity>
+        <activity android:name=".activities.EventDetailActivity"></activity>
     </application>
 
 </manifest>
