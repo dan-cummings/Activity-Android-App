@@ -7,19 +7,14 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -219,25 +214,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 PlaceEvent event = Parcels.unwrap(parcel);
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 event.getMembers().put(user.getDisplayName(), true);
-                event.setmOwner(user.getDisplayName());
+                event.setOwner(user.getDisplayName());
                 String initMessage = "Welcome to my event.";
-                Chat newChat = new Chat(event.getmName(), initMessage, event.getmOwner());
-                newChat.getMembers().put(event.getmOwner(), Boolean.TRUE);
-                Message newMessage = new Message(initMessage, event.getmOwner());
+                Chat newChat = new Chat(event.getName(), initMessage, event.getOwner());
+                newChat.getMembers().put(event.getOwner(), Boolean.TRUE);
+                Message newMessage = new Message(initMessage, event.getOwner());
                 //Makes these changes to the database.
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                 rootRef.child("Messages")
-                        .child(event.getmName())
+                        .child(event.getName())
                         .push()
                         .setValue(newMessage);
                 rootRef.child("Chats")
-                        .child(event.getmName())
+                        .child(event.getName())
                         .setValue(newChat);
                 rootRef.child("Places")
-                        .child(event.getmName())
+                        .child(event.getName())
                         .setValue(event);
-                userData.getGroups().put(event.getmName(), Boolean.TRUE);
-                userData.getChats().put(event.getmName(), Boolean.TRUE);
+                userData.getGroups().put(event.getName(), Boolean.TRUE);
+                userData.getChats().put(event.getName(), Boolean.TRUE);
                 rootRef.child("Users")
                         .child(user.getUid())
                         .setValue(userData);

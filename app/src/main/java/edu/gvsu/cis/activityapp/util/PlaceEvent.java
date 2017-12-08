@@ -1,8 +1,5 @@
 package edu.gvsu.cis.activityapp.util;
 
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.maps.model.LatLng;
-
 import org.parceler.Parcel;
 
 import java.util.HashMap;
@@ -16,8 +13,8 @@ import java.util.Map;
 public class PlaceEvent {
 
     String _key;
-    String mName;
-    String mOwner;
+    String name;
+    String owner;
     String mUid;
     String date;
     String time;
@@ -28,8 +25,8 @@ public class PlaceEvent {
 
     public PlaceEvent (String name, String owner, String uid, Map<String, Boolean> mem,
                        String place, String d, String t) {
-        this.mName = name;
-        this.mOwner = owner;
+        this.name = name;
+        this.owner = owner;
         this.mUid = uid;
         this.placeId = place;
         this.members = mem;
@@ -62,20 +59,20 @@ public class PlaceEvent {
         this.members = members;
     }
 
-    public String getmName() {
-        return mName;
+    public String getName() {
+        return name;
     }
 
-    public void setmName(String mName) {
-        this.mName = mName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getmOwner() {
-        return mOwner;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setmOwner(String mOwner) {
-        this.mOwner = mOwner;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getmUid() {

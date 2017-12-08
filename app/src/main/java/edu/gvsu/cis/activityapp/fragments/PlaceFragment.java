@@ -11,33 +11,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import org.parceler.Parcels;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.activities.EventDetailActivity;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
+import edu.gvsu.cis.activityapp.util.MapManager;
 import edu.gvsu.cis.activityapp.util.PlaceEvent;
-import edu.gvsu.cis.activityapp.util.User;
 
 /**
  * A fragment representing a list of Items.
@@ -52,6 +43,7 @@ public class PlaceFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private FirebaseRecyclerAdapter<PlaceEvent, PlaceHolder> adapter;
     private FirebaseManager mFirebase;
+    private MapManager mapManager;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -89,6 +81,7 @@ public class PlaceFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         this.mFirebase = FirebaseManager.getInstance();
+        this.mapManager = MapManager.getInstance();
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -123,8 +116,8 @@ public class PlaceFragment extends Fragment {
                     @Override
                     protected void onBindViewHolder(PlaceHolder holder, int position, PlaceEvent model) {
                         holder.mItem = model;
-                        holder.nameView.setText(model.getmName());
-                        holder.userView.setText(model.getmOwner());
+                        holder.nameView.setText(model.getName());
+                        holder.userView.setText(model.getOwner());
                         holder.mView.setOnClickListener(v -> {
                             if (null != mListener) {
                                 // Notify the active callbacks interface (the activity, if the
@@ -136,6 +129,20 @@ public class PlaceFragment extends Fragment {
                                 mListener.onListFragmentInteraction(holder.mItem);
                             }
                         });
+                        
+                        if (model.getPlaceId() != null) {
+                            mapManager.getPlacePhoto(model.getPlaceId()).addOnCompleteListener((task) -> {
+                                if (task.isSuccessful() && task.getResult().getPhotoMetadata().getCount() > 0) {
+                                    PlacePhotoMetadata metadata = task.getResult().getPhotoMetadata().get(0);
+                                    mapManager.getBitmapPhoto(metadata).addOnCompleteListener((photoTask) -> {
+                                        if (photoTask.isSuccessful()) {
+                                            holder.imageView.setImageBitmap(photoTask.getResult().getBitmap());
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
                     }
 
                     @Override
@@ -177,6 +184,7 @@ public class PlaceFragment extends Fragment {
 
     public class PlaceHolder extends RecyclerView.ViewHolder {
         public final View mView;
+        public final ImageView imageView;
         public final TextView nameView;
         public final TextView userView;
         public PlaceEvent mItem;
@@ -184,6 +192,7 @@ public class PlaceFragment extends Fragment {
         public PlaceHolder(View view) {
             super(view);
             mView = view;
+            imageView = (ImageView) view.findViewById(R.id.event_image);
             nameView = (TextView) view.findViewById(R.id.event_name);
             userView = (TextView) view.findViewById(R.id.event_user_name);
         }
