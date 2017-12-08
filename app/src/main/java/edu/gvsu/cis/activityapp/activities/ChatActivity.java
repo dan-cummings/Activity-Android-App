@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -22,6 +24,7 @@ import org.joda.time.Period;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.Chat;

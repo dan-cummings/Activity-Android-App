@@ -20,6 +20,8 @@ public class PlaceEvent {
     String time;
     Map<String, Boolean> members = new HashMap<>();
     String placeId;
+    double lat;
+    double lng;
 
     public PlaceEvent() { }
 
@@ -33,6 +35,22 @@ public class PlaceEvent {
         this.date = d;
         this.time = t;
 
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 
     public String getDate() {

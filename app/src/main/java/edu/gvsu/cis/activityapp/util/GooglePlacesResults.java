@@ -55,6 +55,9 @@ public class GooglePlacesResults {
     @SerializedName("id")
     private String id;
 
+    @SerializedName("place_id")
+    private String place_id;
+
     @SerializedName("name")
     private String name;
 
@@ -66,6 +69,10 @@ public class GooglePlacesResults {
 
     @SerializedName("types")
     private List<String> types;
+
+    public String getPlaceId() {
+        return place_id;
+    }
 
     public class Geometry {
         @SerializedName("location")

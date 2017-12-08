@@ -2,7 +2,6 @@ package edu.gvsu.cis.activityapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.renderscript.Sampler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,31 +9,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.Chat;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
-import edu.gvsu.cis.activityapp.util.PlaceEvent;
-import edu.gvsu.cis.activityapp.util.User;
 
 /**
  * A fragment representing a list of Items.
@@ -136,6 +125,19 @@ public class ChatFragment extends Fragment {
                             }
 
                         });
+//                        if (model.getPlaceId() != null) {
+//                            mapManager.getPlacePhoto(model.getPlaceId()).addOnCompleteListener((task) -> {
+//                                if (task.isSuccessful() && task.getResult().getPhotoMetadata().getCount() > 0) {
+//                                    PlacePhotoMetadata metadata = task.getResult().getPhotoMetadata().get(0);
+//                                    mapManager.getBitmapPhoto(metadata).addOnCompleteListener((photoTask) -> {
+//                                        if (photoTask.isSuccessful()) {
+//                                            holder.imageView.setImageBitmap(photoTask.getResult().getBitmap());
+//                                        }
+//                                    });
+//                                }
+//                            });
+//                        }
+
                     }
 
                     @Override
@@ -190,6 +192,7 @@ public class ChatFragment extends Fragment {
         public final TextView mMessageSentView;
         public final TextView mSenderName;
         public final ProgressBar progressBar;
+        public final ImageView eventPhoto;
         public Chat mItem;
 
         public ChatHolder(View view) {
@@ -198,7 +201,9 @@ public class ChatFragment extends Fragment {
             mTitleView = (TextView) view.findViewById(R.id.title_view);
             mMessageSentView = (TextView) view.findViewById(R.id.last_message_view);
             mSenderName = (TextView) view.findViewById(R.id.sender_name);
-            progressBar = (ProgressBar) view.findViewById(R.id.progressBar3);
+            progressBar = (ProgressBar) view.findViewById(R.id.chatPhotoBar);
+            eventPhoto = (ImageView) view.findViewById(R.id.chatEventPhoto);
+            progressBar.setVisibility(View.GONE);
         }
 
         @Override

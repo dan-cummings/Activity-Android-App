@@ -129,13 +129,14 @@ public class PlaceFragment extends Fragment {
                                 mListener.onListFragmentInteraction(holder.mItem);
                             }
                         });
-                        
+
                         if (model.getPlaceId() != null) {
                             mapManager.getPlacePhoto(model.getPlaceId()).addOnCompleteListener((task) -> {
                                 if (task.isSuccessful() && task.getResult().getPhotoMetadata().getCount() > 0) {
                                     PlacePhotoMetadata metadata = task.getResult().getPhotoMetadata().get(0);
                                     mapManager.getBitmapPhoto(metadata).addOnCompleteListener((photoTask) -> {
                                         if (photoTask.isSuccessful()) {
+                                            holder.imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                             holder.imageView.setImageBitmap(photoTask.getResult().getBitmap());
                                         }
                                     });

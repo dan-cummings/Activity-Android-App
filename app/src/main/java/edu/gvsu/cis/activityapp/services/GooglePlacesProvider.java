@@ -13,6 +13,7 @@ public class GooglePlacesProvider {
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        System.out.println("GOOGLE_URL: " + url);
         client.get(url, params, responseHandler);
     }
 

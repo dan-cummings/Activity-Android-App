@@ -42,4 +42,6 @@
     <string name="btn_select_loc">Select A Location</string>
     <string name="txt_current_loc">Current Location: %1$s</string>
     <string name="txt_current_loc_err">Current Location: Error Getting User Location</string>
+    <string name="txt_event_detail_owner">Created By: %1$s</string>
+    <string name="txt_event_rating">Rating: %1$s</string>
 </resources>

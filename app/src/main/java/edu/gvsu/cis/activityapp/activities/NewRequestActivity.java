@@ -67,7 +67,7 @@ public class NewRequestActivity extends AppCompatActivity implements PlaceFragme
             if (names.contains(username.getText().toString()) && selectedEvent != null) {
                 Intent data = new Intent();
                 data.putExtra("NAME", username.getText().toString());
-                data.putExtra("GROUP", selectedEvent.getmName());
+                data.putExtra("GROUP", selectedEvent.getName());
                 setResult(RESULT_OK, data);
                 finish();
             } else {

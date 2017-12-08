@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -41,11 +42,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
 import cz.msebera.android.httpclient.Header;
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.activities.EventDetailActivity;
 import edu.gvsu.cis.activityapp.activities.NewEventActivity;
 import edu.gvsu.cis.activityapp.services.GooglePlacesProvider;
 import edu.gvsu.cis.activityapp.util.Chat;
@@ -79,9 +82,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private View mView;
     private Button mBtnChange;
 
+    private FloatingActionButton addEvent;
+    private FloatingActionButton viewEvent;
+
     private Timer mTimer;
     private FirebaseManager mFirebase;
     private User userData;
+
+    private Object currentPlace;
+    private ArrayList<PlaceEvent> firebasePlaces;
 
     public MapFragment() {}
 
@@ -114,10 +123,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         //Added action button for adding an event.
-        FloatingActionButton addEvent = (FloatingActionButton) view.findViewById(R.id.addEventFab);
+        addEvent = (FloatingActionButton) view.findViewById(R.id.addEventFab);
         addEvent.setOnClickListener((click) -> {
             Intent newEvent = new Intent(view.getContext(), NewEventActivity.class);
             startActivityForResult(newEvent, 3);
+        });
+
+        viewEvent = (FloatingActionButton) view.findViewById(R.id.viewEventFab);
+        viewEvent.setOnClickListener((click) -> {
+            if (currentPlace != null) {
+                Parcelable parcel = null;
+                if (currentPlace instanceof PlaceEvent) {
+                    // Ready to go!
+                    parcel = Parcels.wrap((PlaceEvent) currentPlace);
+                } else if (currentPlace instanceof GooglePlacesResults) {
+                    GooglePlacesResults results = (GooglePlacesResults) currentPlace;
+                    PlaceEvent event = new PlaceEvent();
+                    event.setPlaceId(results.getPlaceId());
+                    event.setName(results.getName());
+                    event.setOwner("Google");
+                    parcel = Parcels.wrap(event);
+                } else if (currentPlace instanceof Place) {
+                    Place place = (Place) currentPlace;
+                    PlaceEvent event = new PlaceEvent();
+                    event.setPlaceId(place.getId());
+                    event.setName(place.getName().toString());
+                    event.setOwner("Google");
+                    parcel = Parcels.wrap(event);
+                }
+
+                if (parcel != null) {
+                    Intent intent = new Intent(view.getContext(), EventDetailActivity.class);
+                    intent.putExtra("EVENT", parcel);
+                    startActivity(intent);
+                }
+            }
         });
 
         if (mFirebase.getUser() != null) {
@@ -139,7 +179,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         } else {
             addEvent.setVisibility(View.GONE);
         }
-
+        viewEvent.setVisibility(View.GONE);
     }
 
     @Override
@@ -155,28 +195,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             e.printStackTrace();
         }
 
+        if (this.mFirebase.getUser() != null) {
+            firebasePlaces = new ArrayList<>();
+            FirebaseDatabase.getInstance()
+                    .getReference("Places")
+                    .addListenerForSingleValueEvent(getValueListener());
+        }
+
     }
 
     private void handleTouch(LatLng touch) {
-//        mMapManager.getMap().addMarker(new MarkerOptions().position(touch).title("Activity Location"));
-//        mMapManager.getCurrentPlace().addOnCompleteListener((result) -> {
-//            if (result.isSuccessful()) {
-//                PlaceLikelihoodBufferResponse response = result.getResult();
-//                for (PlaceLikelihood placeLikelihood : response) {
-//                    Log.i("MAP MANAGER", String.format("Place '%s' has likelihood: %g",
-//                            placeLikelihood.getPlace().getName(),
-//                            placeLikelihood.getLikelihood()));
-//                }
-//                response.release();
-//            } else {
-//                Toast.makeText(getContext(), result.getException().getMessage(), Toast.LENGTH_LONG).show();
-//                System.out.println(result.getException().getMessage());
-//            }
-//        });
+        viewEvent.setVisibility(View.GONE);
+        currentPlace = null;
     }
 
-    private void placeMarker(LatLng location, String title, float color) {
-        mMapManager.getMap().addMarker(new MarkerOptions().position(location).title(title).icon(BitmapDescriptorFactory.defaultMarker(color)));
+    private void placeMarker(LatLng location, String title, float color, Object tag) {
+        mMapManager.getMap().addMarker(new MarkerOptions().position(location).title(title).icon(BitmapDescriptorFactory.defaultMarker(color))).setTag(tag);
     }
 
     private void moveCamera(LatLng location) {
@@ -199,8 +233,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
                 mMapManager.getMap().clear();
+                for (PlaceEvent event : firebasePlaces) {
+                    if (event.getPlaceId() != null && event.getLat() != 0.0) {
+                        placeMarker(new LatLng(event.getLat(), event.getLng()), event.getName(), BitmapDescriptorFactory.HUE_RED, event);
+                    }
+                }
                 Place place = PlacePicker.getPlace(getContext(), data);
-                placeMarker(place.getLatLng(), place.getName().toString(), BitmapDescriptorFactory.HUE_AZURE);
+//                placeMarker(place.getLatLng(), place.getName().toString(), BitmapDescriptorFactory.HUE_AZURE, place);
                 moveCamera(place.getLatLng());
                 HttpRequest nearbyPlaces = new HttpRequest(
                         new RequestBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/")
@@ -237,6 +276,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 rootRef.child("Users")
                         .child(user.getUid())
                         .setValue(userData);
+
+                // ADD PLACEEVENTS TO THE MAP
+
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -248,6 +290,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
          * false otherwise (i.e., the default behavior should occur).
          * The default behavior is for the camera to move to the marker and an info window to appear.
          */
+        viewEvent.setVisibility(View.VISIBLE);
+        if (marker.getTag() != null) {
+            if (marker.getTag() instanceof PlaceEvent) {
+                currentPlace = marker.getTag();
+            } else if (marker.getTag() instanceof GooglePlacesResults) {
+                currentPlace = marker.getTag();
+            } else if (marker.getTag() instanceof Place) {
+                currentPlace = marker.getTag();
+            }
+        }
         return false;
     }
 
@@ -264,8 +316,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         double placeLat = r.getGeometry().getLocation().getLat();
                         double placeLng = r.getGeometry().getLocation().getLng();
                         LatLng placeLoc = new LatLng(placeLat, placeLng);
-
-                        placeMarker(placeLoc, r.getName(), BitmapDescriptorFactory.HUE_ORANGE);
+                        boolean found = false;
+                        for (PlaceEvent event : firebasePlaces) {
+                            if (event.getPlaceId() != null && event.getLat() != 0.0) {
+                                if (placeLat == event.getLat() && placeLng == event.getLng()) {
+                                    Toast.makeText(getContext(), "Found " + r.getName(), Toast.LENGTH_SHORT).show();
+                                    found = true;
+                                }
+                            }
+                        }
+                        if (!found) {
+                            placeMarker(placeLoc, r.getName(), BitmapDescriptorFactory.HUE_ORANGE, r);
+                        }
                     }
                 }
             }
@@ -274,6 +336,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public void onSuccess(int statusCode, Header[] headers, JSONArray places) {
                 System.out.println("ARRAY OBJECT RESPONSE");
                 System.out.println(places.toString());
+            }
+        };
+    }
+
+    private ValueEventListener getValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    PlaceEvent event = child.getValue(PlaceEvent.class);
+                    firebasePlaces.add(event);
+                    if (event.getPlaceId() != null && event.getLat() != 0.0) {
+                        placeMarker(new LatLng(event.getLat(), event.getLng()), event.getName(), BitmapDescriptorFactory.HUE_RED, event);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         };
     }

@@ -1,6 +1,7 @@
 package edu.gvsu.cis.activityapp.activities;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -50,12 +51,16 @@ public class EventDetailActivity extends AppCompatActivity {
 
         eventName.setText(event.getName());
         eventDetail1.setText("");
+        eventDetail2.setText("");
+        eventDetail3.setText(String.format(getResources().getString(R.string.txt_event_detail_owner), event.getOwner()));
 
         if (event.getPlaceId() != null) {
             mapManager.getPlaceByID(event.getPlaceId()).addOnCompleteListener((task) -> {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() && task.getResult().getCount() > 0) {
                     eventPlace = task.getResult().get(0);
+                    eventDetail1.setPaintFlags(eventDetail1.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                     eventDetail1.setText(eventPlace.getWebsiteUri().toString());
+                    eventDetail2.setText(eventPlace.getAddress());
                 }
             });
             mapManager.getPlacePhoto(event.getPlaceId()).addOnCompleteListener((task) -> {
@@ -63,6 +68,7 @@ public class EventDetailActivity extends AppCompatActivity {
                    PlacePhotoMetadata metadata = task.getResult().getPhotoMetadata().get(0);
                    mapManager.getBitmapPhoto(metadata).addOnCompleteListener((photoTask) -> {
                        if (photoTask.isSuccessful()) {
+                           eventPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
                            eventPhoto.setImageBitmap(photoTask.getResult().getBitmap());
                        }
                    });

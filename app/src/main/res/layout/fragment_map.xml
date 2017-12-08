@@ -32,4 +32,16 @@
         app:backgroundTint="@color/colorPrimaryDark"
         app:srcCompat="@android:drawable/ic_input_add" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/viewEventFab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="128dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/places_ic_search"
+        app:backgroundTint="@color/colorPrimaryDark" />
+
 </FrameLayout>

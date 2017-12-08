@@ -192,25 +192,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 PlaceEvent event = Parcels.unwrap(parcel);
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 event.getMembers().put(user.getDisplayName(), true);
-                event.setmOwner(user.getDisplayName());
+                event.setOwner(user.getDisplayName());
                 String initMessage = "Welcome to my event.";
-                Chat newChat = new Chat(event.getmName(), initMessage, event.getmOwner());
-                newChat.getMembers().put(event.getmOwner(), Boolean.TRUE);
-                Message newMessage = new Message(initMessage, event.getmOwner());
+                Chat newChat = new Chat(event.getName(), initMessage, event.getOwner());
+                newChat.getMembers().put(event.getOwner(), Boolean.TRUE);
+                Message newMessage = new Message(initMessage, event.getOwner());
                 //Makes these changes to the database.
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                 rootRef.child("Messages")
-                        .child(event.getmName())
+                        .child(event.getName())
                         .push()
                         .setValue(newMessage);
                 rootRef.child("Chats")
-                        .child(event.getmName())
+                        .child(event.getName())
                         .setValue(newChat);
                 rootRef.child("Places")
-                        .child(event.getmName())
+                        .child(event.getName())
                         .setValue(event);
-                userData.getGroups().put(event.getmName(), Boolean.TRUE);
-                userData.getChats().put(event.getmName(), Boolean.TRUE);
+                userData.getGroups().put(event.getName(), Boolean.TRUE);
+                userData.getChats().put(event.getName(), Boolean.TRUE);
                 rootRef.child("Users")
                         .child(user.getUid())
                         .setValue(userData);
