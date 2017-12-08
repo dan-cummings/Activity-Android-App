@@ -1,7 +1,9 @@
 package edu.gvsu.cis.activityapp.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -23,12 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import edu.gvsu.cis.activityapp.R;
+import edu.gvsu.cis.activityapp.activities.EventDetailActivity;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.User;
@@ -119,14 +125,15 @@ public class PlaceFragment extends Fragment {
                         holder.mItem = model;
                         holder.nameView.setText(model.getmName());
                         holder.userView.setText(model.getmOwner());
-                        holder.mView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (null != mListener) {
-                                    // Notify the active callbacks interface (the activity, if the
-                                    // fragment is attached to one) that an item has been selected.
-                                    mListener.onListFragmentInteraction(holder.mItem);
-                                }
+                        holder.mView.setOnClickListener(v -> {
+                            if (null != mListener) {
+                                // Notify the active callbacks interface (the activity, if the
+                                // fragment is attached to one) that an item has been selected.
+                                Intent intent = new Intent(getContext(), EventDetailActivity.class);
+                                Parcelable parcel = Parcels.wrap(holder.mItem);
+                                intent.putExtra("EVENT", parcel);
+                                startActivity(intent);
+                                mListener.onListFragmentInteraction(holder.mItem);
                             }
                         });
                     }
