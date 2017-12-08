@@ -1,15 +1,11 @@
 package edu.gvsu.cis.activityapp.activities;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,17 +14,12 @@ import android.widget.TextView;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.parceler.Parcels;
@@ -38,11 +29,8 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.gvsu.cis.activityapp.R;
-import edu.gvsu.cis.activityapp.services.GooglePlacesProvider;
-import edu.gvsu.cis.activityapp.util.HttpRequest;
 import edu.gvsu.cis.activityapp.util.MapManager;
 import edu.gvsu.cis.activityapp.util.PlaceEvent;
-import edu.gvsu.cis.activityapp.util.RequestBuilder;
 
 public class NewEventActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener{
 
@@ -83,7 +71,7 @@ public class NewEventActivity extends AppCompatActivity implements TimePickerDia
             event.setmOwner(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
             event.setDate(fmt.print(date));
             event.setTime(fmt.print(time));
-//            event.setPlace(currentPlace);
+            event.setPlaceId(currentPlace.getId());
             //TODO add fields to event.
             Parcelable parcel = Parcels.wrap(event);
             eventIntent.putExtra("EVENT", parcel);

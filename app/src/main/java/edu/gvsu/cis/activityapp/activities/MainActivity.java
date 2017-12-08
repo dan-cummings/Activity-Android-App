@@ -32,9 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.parceler.Parcels;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.gvsu.cis.activityapp.R;
@@ -47,6 +44,7 @@ import edu.gvsu.cis.activityapp.util.PlaceEvent;
 import edu.gvsu.cis.activityapp.util.FirebaseManager;
 import edu.gvsu.cis.activityapp.util.Message;
 import edu.gvsu.cis.activityapp.util.User;
+import edu.gvsu.cis.activityapp.util.Request;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PlaceFragment.OnListFragmentInteractionListener, ChatFragment.OnListFragmentInteractionListener {
 
@@ -55,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseUser mUser;
 
     private static int NEW_EVENT_REQUEST = 0;
+    private static int NEW_EVENT_INVITE = 1;
 
     @BindView(R.id.nav_view) NavigationView drawerView;
     private TextView userName;
@@ -132,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-
         // Check if the app has location permissions.
         getLocationPermission();
         checkIfUserExists();
@@ -184,7 +182,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
-    //updateLocationUI();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == NEW_EVENT_REQUEST) {
+                Parcelable parcel = data.getParcelableExtra("EVENT");
+                PlaceEvent event = Parcels.unwrap(parcel);
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                event.getMembers().put(user.getDisplayName(), true);
+                event.setmOwner(user.getDisplayName());
+                String initMessage = "Welcome to my event.";
+                Chat newChat = new Chat(event.getmName(), initMessage, event.getmOwner());
+                newChat.getMembers().put(event.getmOwner(), Boolean.TRUE);
+                Message newMessage = new Message(initMessage, event.getmOwner());
+                //Makes these changes to the database.
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child("Messages")
+                        .child(event.getmName())
+                        .push()
+                        .setValue(newMessage);
+                rootRef.child("Chats")
+                        .child(event.getmName())
+                        .setValue(newChat);
+                rootRef.child("Places")
+                        .child(event.getmName())
+                        .setValue(event);
+                userData.getGroups().put(event.getmName(), Boolean.TRUE);
+                userData.getChats().put(event.getmName(), Boolean.TRUE);
+                rootRef.child("Users")
+                        .child(user.getUid())
+                        .setValue(userData);
+            } else if (requestCode == NEW_EVENT_INVITE) {
+                String user = data.getStringExtra("NAME");
+                String group = data.getStringExtra("GROUP");
+                Request req = new Request(userData.getName(), user, group);
+                FirebaseDatabase.getInstance()
+                        .getReference("Requests")
+                        .push()
+                        .setValue(req);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void checkIfUserExists() {

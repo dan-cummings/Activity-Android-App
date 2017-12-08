@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
@@ -68,7 +69,7 @@ import static android.app.Activity.RESULT_OK;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     /*
-    * Okay.. So Google PlaceEvent API comes with 3 components... PlacePicker, GeoDataAPI, and PlaceDetectionAPI...
+    * Okay.. So Google Places API comes with 3 components... PlacePicker, GeoDataAPI, and PlaceDetectionAPI...
     * We do not want the PlacePicker, since it provides immutable code, meaning we cannot add our own places
     * to this UI. Supposedly, we can use the GeoDataAPI to get places around the user, and the PlaceDetectionAPI
     * to retrieve information on the user's current location. GeoDataAPI seems like it will be our friend.

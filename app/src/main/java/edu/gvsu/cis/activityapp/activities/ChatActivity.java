@@ -72,7 +72,7 @@ public class ChatActivity extends AppCompatActivity {
                 TextView time = (TextView) v.findViewById(R.id.timeLabel);
 
                 message.setText(model.getMessage());
-                sender.setText(model.getUser());
+                sender.setText(model.getUser() + ":");
                 DateTime dt = DateTime.parse(model.getTime());
                 DateTime now = DateTime.now();
                 Period timePeriod = new Period(dt, now);
