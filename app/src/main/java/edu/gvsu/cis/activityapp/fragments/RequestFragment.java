@@ -2,7 +2,6 @@ package edu.gvsu.cis.activityapp.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -29,8 +29,6 @@ import edu.gvsu.cis.activityapp.util.FirebaseManager;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RequestFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link RequestFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
@@ -73,7 +71,6 @@ public class RequestFragment extends Fragment {
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Request req =  dataSnapshot.getValue(Request.class);
             List<Request> requests = new ArrayList<>();
             for (Request r : items) {
                 if (!r.get_key().equals(dataSnapshot.getKey())) {
@@ -142,8 +139,13 @@ public class RequestFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_request, container, false);
         Button inviteButton = (Button) view.findViewById(R.id.invite_button);
         inviteButton.setOnClickListener((clickerclick) -> {
-            Intent intent = new Intent(getContext(), NewRequestActivity.class);
-            getActivity().startActivityForResult(intent, NEW_EVENT_INVITE);
+            if (mFirebase.getUser() != null) {
+                Intent intent = new Intent(getContext(), NewRequestActivity.class);
+                getActivity().startActivityForResult(intent, NEW_EVENT_INVITE);
+            }
+            else {
+                Toast.makeText(getContext(), "Please sign in first.", Toast.LENGTH_SHORT).show();
+            }
         });
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.requestList);
         // Inflate the layout for this fragment
@@ -168,19 +170,5 @@ public class RequestFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 }

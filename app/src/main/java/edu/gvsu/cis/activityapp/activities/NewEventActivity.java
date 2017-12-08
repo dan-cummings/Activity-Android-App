@@ -76,7 +76,6 @@ public class NewEventActivity extends AppCompatActivity implements TimePickerDia
                 event.setLat(currentPlace.getLatLng().latitude);
                 event.setLng(currentPlace.getLatLng().longitude);
             }
-            //TODO add fields to event.
             Parcelable parcel = Parcels.wrap(event);
             eventIntent.putExtra("EVENT", parcel);
             setResult(RESULT_OK, eventIntent);

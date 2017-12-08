@@ -1,6 +1,7 @@
 package edu.gvsu.cis.activityapp.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+
+import java.util.Random;
 
 import edu.gvsu.cis.activityapp.R;
 import edu.gvsu.cis.activityapp.util.Chat;
@@ -125,19 +128,10 @@ public class ChatFragment extends Fragment {
                             }
 
                         });
-//                        if (model.getPlaceId() != null) {
-//                            mapManager.getPlacePhoto(model.getPlaceId()).addOnCompleteListener((task) -> {
-//                                if (task.isSuccessful() && task.getResult().getPhotoMetadata().getCount() > 0) {
-//                                    PlacePhotoMetadata metadata = task.getResult().getPhotoMetadata().get(0);
-//                                    mapManager.getBitmapPhoto(metadata).addOnCompleteListener((photoTask) -> {
-//                                        if (photoTask.isSuccessful()) {
-//                                            holder.imageView.setImageBitmap(photoTask.getResult().getBitmap());
-//                                        }
-//                                    });
-//                                }
-//                            });
-//                        }
 
+                        Random rnd = new Random();
+                        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                        holder.eventPhoto.setBackgroundColor(color);
                     }
 
                     @Override

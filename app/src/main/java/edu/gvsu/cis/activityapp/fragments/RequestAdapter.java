@@ -22,10 +22,10 @@ import edu.gvsu.cis.activityapp.util.Request;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
 
-    private List<Request> requests;
+    private final List<Request> requests;
     private FirebaseManager mFireManager;
 
-    public RequestAdapter(List<Request> items) {
+    public RequestAdapter(final List<Request> items) {
         this.requests = items;
         mFireManager = FirebaseManager.getInstance();
     }
@@ -51,7 +51,8 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
     }
 
     public void refresh(final List<Request> reqs) {
-        requests = reqs;
+        requests.clear();
+        requests.addAll(reqs);
         notifyDataSetChanged();
     }
 

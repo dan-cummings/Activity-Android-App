@@ -261,7 +261,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onListFragmentInteraction(PlaceEvent item) {
-        //TODO add details activity
+        Intent intent = new Intent(this, EventDetailActivity.class);
+        Parcelable parcel = Parcels.wrap(item);
+        intent.putExtra("EVENT", parcel);
+        startActivity(intent);
     }
 
     @Override

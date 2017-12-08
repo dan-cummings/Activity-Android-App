@@ -16,7 +16,6 @@ public class CustomFragmentPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        System.out.println("POSITION DUMBASS: " + position);
         switch (position) {
             case 0:
                 return new MapFragment();
