@@ -131,7 +131,7 @@ public class ChatFragment extends Fragment {
 
                         Random rnd = new Random();
                         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-                        holder.eventPhoto.setBackgroundColor(color);
+                        holder.mView.setBackgroundColor(color);
                     }
 
                     @Override
@@ -185,8 +185,6 @@ public class ChatFragment extends Fragment {
         public final TextView mTitleView;
         public final TextView mMessageSentView;
         public final TextView mSenderName;
-        public final ProgressBar progressBar;
-        public final ImageView eventPhoto;
         public Chat mItem;
 
         public ChatHolder(View view) {
@@ -195,9 +193,6 @@ public class ChatFragment extends Fragment {
             mTitleView = (TextView) view.findViewById(R.id.title_view);
             mMessageSentView = (TextView) view.findViewById(R.id.last_message_view);
             mSenderName = (TextView) view.findViewById(R.id.sender_name);
-            progressBar = (ProgressBar) view.findViewById(R.id.chatPhotoBar);
-            eventPhoto = (ImageView) view.findViewById(R.id.chatEventPhoto);
-            progressBar.setVisibility(View.GONE);
         }
 
         @Override

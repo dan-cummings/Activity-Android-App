@@ -44,4 +44,10 @@
     <string name="txt_current_loc_err">Current Location: Error Getting User Location</string>
     <string name="txt_event_detail_owner">Created By: %1$s</string>
     <string name="txt_event_rating">Rating: %1$s</string>
+
+    <string name="details_event_address">Where at?</string>
+    <string name="details_event_time">When is it?</string>
+    <string name="details_event_hosting">Who is hosting?</string>
+    <string name="details_event_more">Venue Website</string>
+    <string name="details_time_format">%d/%d/%d at %d:%d</string>
 </resources>

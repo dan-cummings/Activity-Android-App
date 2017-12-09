@@ -135,7 +135,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Parcelable parcel = null;
                 if (currentPlace instanceof PlaceEvent) {
                     // Ready to go!
-                    parcel = Parcels.wrap((PlaceEvent) currentPlace);
+                    parcel = Parcels.wrap(currentPlace);
                 } else if (currentPlace instanceof GooglePlacesResults) {
                     GooglePlacesResults results = (GooglePlacesResults) currentPlace;
                     PlaceEvent event = new PlaceEvent();
@@ -239,14 +239,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
                 Place place = PlacePicker.getPlace(getContext(), data);
-//                placeMarker(place.getLatLng(), place.getName().toString(), BitmapDescriptorFactory.HUE_AZURE, place);
                 moveCamera(place.getLatLng());
                 HttpRequest nearbyPlaces = new HttpRequest(
                         new RequestBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/")
                                 .setQuery("json")
                                 .addParam("location", place.getLatLng().latitude + "," + place.getLatLng().longitude)
                                 .addParam("radius", "1609")
-//                                .addParam("type", "point_of_interest")
                                 .addParam("key", "AIzaSyAvHvPQ4a4OtjyEC0IJnqavqWxfKoA2kpU"));
                 GooglePlacesProvider.get(nearbyPlaces.toString(), null, getNearbyPlaces());
             } else if (requestCode == 3) {
@@ -276,9 +274,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 rootRef.child("Users")
                         .child(user.getUid())
                         .setValue(userData);
-
-                // ADD PLACEEVENTS TO THE MAP
-
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

@@ -8,10 +8,12 @@
 
     <ImageView
         android:id="@+id/event_photo"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
+        android:layout_width="0dp"
+        android:layout_height="156dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher_round" />
@@ -19,51 +21,119 @@
     <TextView
         android:id="@+id/txtEventName"
         android:layout_width="216dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/event_photo"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_photo" />
 
     <TextView
-        android:id="@+id/txtEventDetail1"
-        android:layout_width="216dp"
+        android:id="@+id/txtEventWebsite"
+        android:layout_width="0dp"
         android:layout_height="20dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
+        android:textAlignment="center"
         android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/event_photo"
+        app:layout_constraintEnd_toEndOf="@+id/txtEventCreator"
+        app:layout_constraintStart_toStartOf="@+id/txtEventCreator"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+    <TextView
+        android:id="@+id/txtEventAddress"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/directions_button"
+        app:layout_constraintStart_toStartOf="@+id/where_at_txt"
+        app:layout_constraintTop_toBottomOf="@+id/where_at_txt" />
+
+    <TextView
+        android:id="@+id/txtEventCreator"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/txtTimeView"
+        app:layout_constraintStart_toStartOf="@+id/txtTimeView"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <TextView
+        android:id="@+id/where_at_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/details_event_address"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtEventName" />
 
     <TextView
-        android:id="@+id/txtEventDetail2"
-        android:layout_width="216dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="16dp"
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/event_photo"
-        app:layout_constraintTop_toBottomOf="@+id/txtEventDetail1" />
+        android:layout_marginTop="8dp"
+        android:text="@string/details_event_time"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtEventAddress" />
 
     <TextView
-        android:id="@+id/txtEventDetail3"
-        android:layout_width="216dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:id="@+id/txtTimeView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        app:layout_constraintEnd_toEndOf="@+id/txtEventAddress"
+        app:layout_constraintStart_toStartOf="@+id/txtEventAddress"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/details_event_hosting"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTimeView" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/details_event_more"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtEventCreator" />
+
+    <Button
+        android:id="@+id/directions_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Get Directions"
+        app:layout_constraintBottom_toBottomOf="@+id/txtEventAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/event_photo"
-        app:layout_constraintTop_toBottomOf="@+id/txtEventDetail2" />
+        app:layout_constraintTop_toTopOf="@+id/txtEventAddress" />
 
 </android.support.constraint.ConstraintLayout>
