@@ -16,11 +16,13 @@
     <string name="title_activity_user_navigation">UserNavigationActivity</string>
     <string name="title_activity_user_account_nav">UserAccountNavActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_register">Create an Account</string>
+    <string name="title_activity_details">Event Details</string>
+    <string name="title_activity_invite">Event Invite</string>
+    <string name="title_activity_chat">Chatroom</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -50,4 +52,23 @@
     <string name="details_event_hosting">Who is hosting?</string>
     <string name="details_event_more">Venue Website</string>
     <string name="details_time_format">%d/%d/%d at %d:%d</string>
+    <string name="details_directions_button">Get Directions</string>
+    <string name="details_image_description">Photo of event image</string>
+
+    <string name="request_invite_button">Invite</string>
+    <string name="request_invite_text">Want to invite your friends?</string>
+    <string name="request_invite_placehold">invited you to</string>
+    <string name="request_who">Who would you like to invite?</string>
+    <string name="request_which">Which Event?</string>
+    <string name="request_name">Name</string>
+
+    <string name="create_event_head">Name Your Event</string>
+    <string name="create_event_name">Enter a name</string>
+    <string name="create_event_private">Private Event</string>
+    <string name="create_event_when">When is this Event?</string>
+    <string name="create_event_where">Where is this Event?</string>
+    <string name="create_event_time">Select a Time</string>
+    <string name="create_event_date">Select a Date</string>
+
+    <string name="chat_hint">Enter a message</string>
 </resources>

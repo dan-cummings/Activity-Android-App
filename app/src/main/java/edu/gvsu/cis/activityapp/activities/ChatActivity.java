@@ -92,7 +92,7 @@ public class ChatActivity extends AppCompatActivity {
                         time.setText(timePeriod.getHours() + " Hours ago");
                     }
                 } else {
-                    time.setText(dt.getDayOfMonth() + "/" + dt.getMonthOfYear() + "/" + dt.getYear());
+                    time.setText(dt.getMonthOfYear()+ "/" + dt.getDayOfMonth() + "/" + dt.getYear());
                 }
             }
         };
